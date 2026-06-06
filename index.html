@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hematología Loayza</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f3ef;--surface:#fff;--surface2:#f9f8f5;--border:#e2e0d8;--border2:#ccc9be;
+  --text:#1a1917;--text2:#6b6860;--text3:#9e9b91;
+  --accent:#c0392b;--accent2:#e74c3c;--accent-bg:#fdf2f1;
+  --green:#27ae60;--green-bg:#f0faf4;--blue:#2980b9;--blue-bg:#f0f7fd;
+  --amber:#e67e22;--amber-bg:#fef9f0;--purple:#8e44ad;--purple-bg:#faf5fd;
+  --font:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --radius:6px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--text);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:4px}
+.sidebar-title{font-size:15px;font-weight:600}
+.sidebar-subtitle{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.sidebar-nav{padding:12px 0;flex:1}
+.nav-section{padding:8px 20px 4px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;transition:background .15s;color:rgba(255,255,255,.7);font-size:13px;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(192,57,43,.2);color:#fff;border-left-color:var(--accent2)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.main{padding:28px 32px;overflow-y:auto}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:22px;font-weight:600}
+.page-subtitle{font-size:13px;color:var(--text2);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--surface2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:600}
+.card-body{padding:18px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-value{font-size:28px;font-weight:600;font-family:var(--mono);line-height:1}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.stat-card.red .stat-value{color:var(--accent)}.stat-card.green .stat-value{color:var(--green)}
+.stat-card.blue .stat-value{color:var(--blue)}.stat-card.amber .stat-value{color:var(--amber)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2);cursor:pointer}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-red{background:var(--accent-bg);color:var(--accent)}
+.badge-green{background:var(--green-bg);color:#1e8449}
+.badge-blue{background:var(--blue-bg);color:#1a6fa8}
+.badge-amber{background:var(--amber-bg);color:#b7600f}
+.badge-purple{background:var(--purple-bg);color:#6c3483}
+.badge-gray{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.search-bar{display:flex;gap:10px;margin-bottom:16px}
+.input-wrap{position:relative;flex:1}
+.input-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);width:15px;height:15px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(192,57,43,.1)}
+.input-wrap input{padding-left:32px}
+textarea{resize:vertical;min-height:70px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.span2{grid-column:span 2}
+label{font-size:12px;font-weight:500;color:var(--text2)}
+label span.req{color:var(--accent)}
+.checkbox-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.checkbox-item{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+.checkbox-item input{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal{background:var(--surface);border-radius:8px;width:100%;max-width:680px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:16px;font-weight:600}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;border-radius:4px;font-size:18px}
+.modal-close:hover{background:var(--surface2)}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.section-divider{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin-bottom:14px;margin-top:6px}
+.alert{padding:12px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:14px}
+.alert-error{background:var(--accent-bg);border:1px solid #f5c6c2;color:#922b21}
+.alert-success{background:var(--green-bg);border:1px solid #a9dfbf;color:#1e8449}
+.timeline{display:flex;flex-direction:column;gap:0}
+.timeline-item{display:flex;gap:14px;padding-bottom:16px;position:relative}
+.timeline-item:not(:last-child)::before{content:'';position:absolute;left:15px;top:30px;bottom:0;width:1px;background:var(--border)}
+.timeline-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.dot-atencion{background:var(--blue-bg);border:1px solid #b3d4ee}
+.dot-evento{background:var(--accent-bg);border:1px solid #f5c6c2}
+.dot-tratamiento{background:var(--green-bg);border:1px solid #a9dfbf}
+.timeline-content{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.timeline-meta{font-size:11px;color:var(--text3);margin-bottom:4px}
+.timeline-text{font-size:13px}
+.timeline-detail{font-size:12px;color:var(--text2);margin-top:4px}
+.patient-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-start}
+.patient-name{font-size:20px;font-weight:600}
+.patient-meta{font-size:13px;color:var(--text2);margin-top:4px}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text2);gap:10px}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px 20px;color:var(--text2)}
+.hidden{display:none!important}
+.section{display:none}
+.section.active{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Servicio de</div>
+    <div class="sidebar-title">Hematología</div>
+    <div class="sidebar-subtitle">Hospital Loayza</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="showSection('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showSection('pacientes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Pacientes
+    </div>
+    <div class="nav-section">Registrar</div>
+    <div class="nav-item" onclick="openModal('modalPaciente')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Paciente nuevo
+    </div>
+    <div class="nav-item" onclick="openModal('modalAtencion')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Nueva atención
+    </div>
+    <div class="nav-item" onclick="openModal('modalTratamiento')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      Nuevo tratamiento
+    </div>
+    <div class="nav-item" onclick="openModal('modalEvento')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Evento clínico
+    </div>
+  </nav>
+</aside>
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <div id="section-dashboard" class="section active">
+    <div class="page-header">
+      <div><div class="page-title">Dashboard</div><div class="page-subtitle" id="dash-fecha"></div></div>
+      <button class="btn btn-primary" onclick="openModal('modalPaciente')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Paciente nuevo
+      </button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card red"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total pacientes</div></div>
+      <div class="stat-card blue"><div class="stat-value" id="stat-atenciones">—</div><div class="stat-label">Atenciones hoy</div></div>
+      <div class="stat-card green"><div class="stat-value" id="stat-vivos">—</div><div class="stat-label">Pacientes activos</div></div>
+      <div class="stat-card amber"><div class="stat-value" id="stat-eventos">—</div><div class="stat-label">Eventos este mes</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Atenciones recientes</span>
+        <button class="btn btn-ghost btn-sm" onclick="loadDashboard()">↻ Actualizar</button>
+      </div>
+      <div id="dash-atenciones"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+    </div>
+  </div>
+
+  <!-- PACIENTES -->
+  <div id="section-pacientes" class="section">
+    <div class="page-header">
+      <div><div class="page-title">Pacientes</div><div class="page-subtitle">Registro completo del servicio</div></div>
+      <button class="btn btn-primary" onclick="openModal('modalPaciente')">+ Nuevo paciente</button>
+    </div>
+    <div class="search-bar">
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar por nombre o HC..." oninput="searchPacientes()">
+      </div>
+      <select id="filter-vital" onchange="searchPacientes()" style="width:160px">
+        <option value="">Todos</option>
+        <option value="Vivo">Vivos</option>
+        <option value="Fallecido">Fallecidos</option>
+      </select>
+    </div>
+    <div class="card" id="pacientes-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+
+  <!-- DETALLE -->
+  <div id="section-detalle" class="section">
+    <div class="page-header">
+      <button class="btn btn-ghost btn-sm" onclick="showSection('pacientes')">← Volver</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalAtencion')">+ Atención</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalTratamiento')">+ Tratamiento</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalEvento')">+ Evento</button>
+      </div>
+    </div>
+    <div id="detalle-content"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+
+</main>
+</div>
+
+<!-- MODAL PACIENTE -->
+<div id="modalPaciente" class="modal-overlay hidden">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar paciente nuevo</span><button class="modal-close" onclick="closeModal('modalPaciente')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-paciente"></div>
+    <div class="section-divider">Datos personales</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Historia Clínica <span class="req">*</span></label><input type="text" id="p-hc" placeholder="Ej: 123456"></div>
+      <div class="form-group"><label>Nombre completo <span class="req">*</span></label><input type="text" id="p-nombre" placeholder="Apellidos y nombres"></div>
+      <div class="form-group"><label>Sexo</label><select id="p-sexo"><option value="">Seleccionar</option><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+      <div class="form-group"><label>Fecha de nacimiento</label><input type="date" id="p-fnac"></div>
+      <div class="form-group"><label>Fecha ingreso Hematología</label><input type="date" id="p-fingreso"></div>
+      <div class="form-group"><label>Seguro</label><select id="p-seguro"><option value="">Seleccionar</option><option>SIS</option><option>ESSALUD</option><option>PARTICULAR</option></select></div>
+      <div class="form-group"><label>Estado vital</label><select id="p-estado-vital"><option value="Vivo">Vivo</option><option value="Fallecido">Fallecido</option></select></div>
+    </div>
+    <div class="section-divider" style="margin-top:16px">Antecedentes</div>
+    <div class="checkbox-grid" id="antecedentes-grid"></div>
+    <div class="form-group" style="margin-top:10px"><label>Otro antecedente</label><input type="text" id="p-otro-ant" placeholder="Especificar"></div>
+    <div class="section-divider" style="margin-top:16px">Diagnóstico inicial</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div>
+      <div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico()"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div>
+      <div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico()"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div>
+      <div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div>
+      <div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro" placeholder="Especificar si aplica"></div>
+      <div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar</option><option>No aplica</option><option>Bajo</option><option>Intermedio/bajo</option><option>Intermedio</option><option>Alto</option><option>Muy Alto</option><option>Desconocido o no evaluado</option></select></div>
+      <div class="form-group"><label>Estado de la enfermedad</label><select id="d-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid"></div></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" onclick="closeModal('modalPaciente')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarPaciente()">Guardar paciente</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL ATENCIÓN -->
+<div id="modalAtencion" class="modal-overlay hidden">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar atención</span><button class="modal-close" onclick="closeModal('modalAtencion')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-atencion"></div>
+    <div class="form-grid">
+      <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="a-paciente" onchange="loadDxPaciente('a')"><option value="">Seleccionar paciente</option></select></div>
+      <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="a-diagnostico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="a-fecha"></div>
+      <div class="form-group"><label>Tipo de atención <span class="req">*</span></label><select id="a-tipo"><option value="">Seleccionar</option><option>Consulta externa</option><option>Interconsulta hospitalización Nuevo</option><option>Interconsulta emergencia Nuevo</option><option>Interconsulta paciente conocido</option><option>Visita medica</option></select></div>
+      <div class="form-group"><label>Médico responsable</label><select id="a-medico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Motivo</label><select id="a-motivo"><option value="">Seleccionar</option><option>Evaluación paciente nuevo en consulta externa</option><option>Revisión de resultados</option><option>Seguimiento</option><option>Procedimiento</option><option>Evaluación por complicación</option><option>Programacion de QT</option></select></div>
+      <div class="form-group span2"><label>Conducta</label><select id="a-conducta"><option value="">Seleccionar</option><option>Observación</option><option>Continuar tratamiento</option><option>Cambio de tratamiento</option><option>Suspensión de tratamiento</option><option>Transfusión</option><option>Ingreso a EMG</option><option>Alta Hospitalaria/Control por CE</option><option>Alta del servicio</option><option>Inicio de Tratamiento</option></select></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" onclick="closeModal('modalAtencion')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarAtencion()">Guardar atención</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL TRATAMIENTO -->
+<div id="modalTratamiento" class="modal-overlay hidden">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar tratamiento</span><button class="modal-close" onclick="closeModal('modalTratamiento')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-tratamiento"></div>
+    <div class="form-grid">
+      <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="t-paciente" onchange="loadDxPaciente('t')"><option value="">Seleccionar paciente</option></select></div>
+      <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="t-diagnostico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Tipo de tratamiento <span class="req">*</span></label><select id="t-tipo" onchange="toggleTratFields()"><option value="">Seleccionar</option><option>QT</option><option>Inmunoterapia</option><option>Benigno</option><option>Paliativo</option><option>Citorreducción</option><option>Mantenimiento</option></select></div>
+      <div class="form-group" id="t-esquema-wrap"><label>Esquema de QT</label><select id="t-esquema"><option value="">Seleccionar</option><option>7+3</option><option>5+2</option><option>Aza-Veneto</option><option>Aza Mono</option><option>LDAC mono</option><option>LDAC +Veneto</option><option>FLUGA</option><option>Pethema LPA</option><option>Pethema 2011</option><option>Pethema Old</option><option>Pethema Phi+</option><option>HyperCVAD</option><option>Mini HyperCVAD</option><option>VTD</option><option>VRD</option><option>DVTd</option><option>DVRd</option><option>CyBorD</option><option>DRC</option><option>BDR</option><option>R-CHOP</option><option>CHOP</option><option>R-CVP</option><option>CVP</option><option>Imatinib</option><option>Dasatinib</option><option>Nilotinib</option><option>Ponatinib</option><option>Hidroxicarbamida</option></select></div>
+      <div class="form-group hidden" id="t-benigno-wrap"><label>Tx benigno</label><select id="t-benigno"><option value="">Seleccionar</option><option>Hierro</option><option>B12</option><option>B9</option><option>Corticoide</option><option>EPO</option><option>Warfarina</option><option>ACOD</option><option>Antiagregación Plaquetaria</option><option>Otro</option></select></div>
+      <div class="form-group hidden" id="t-otro-wrap"><label>Especificar</label><input type="text" id="t-otro-benigno"></div>
+      <div class="form-group" id="t-ciclo-wrap"><label>Número de ciclo</label><input type="number" id="t-ciclo" min="1" placeholder="1"></div>
+      <div class="form-group"><label>Fecha de inicio</label><input type="date" id="t-inicio"></div>
+      <div class="form-group"><label>Fecha de fin</label><input type="date" id="t-fin"></div>
+      <div class="form-group"><label>Respuesta</label><select id="t-respuesta"><option value="">Seleccionar</option><option>Completa estricta</option><option>Completa</option><option>Muy buena parcial</option><option>Parcial</option><option>Enfermedad Estable</option><option>Refractario</option><option>Progresión</option><option>Recaída</option></select></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" onclick="closeModal('modalTratamiento')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarTratamiento()">Guardar tratamiento</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div id="modalEvento" class="modal-overlay hidden">
+<div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar evento clínico</span><button class="modal-close" onclick="closeModal('modalEvento')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-evento"></div>
+    <div class="form-grid">
+      <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="e-paciente" onchange="loadDxPaciente('e');loadTratPaciente()"><option value="">Seleccionar paciente</option></select></div>
+      <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="e-diagnostico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group span2"><label>Tratamiento relacionado</label><select id="e-tratamiento"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Tipo de evento <span class="req">*</span></label><select id="e-tipo"><option value="">Seleccionar</option><option>Toxicidad</option><option>Complicación</option><option>Evento adverso</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Fecha del evento</label><input type="date" id="e-fecha"></div>
+      <div class="form-group"><label>Sistema comprometido</label><select id="e-sistema"><option value="">Seleccionar</option><option>Hematologica</option><option>Gastrointestinal</option><option>Hepatica</option><option>Renal</option><option>Neurologica</option><option>Cardiaca</option><option>Pulmonar</option><option>Dermatológica</option><option>Metabólica</option><option>Infeccioso</option><option>Otra</option></select></div>
+      <div class="form-group"><label>Grado</label><select id="e-grado"><option value="">Seleccionar</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="form-group"><label>Estado</label><select id="e-estado"><option value="">Seleccionar</option><option>Mejora</option><option>Persistente</option><option>Activo</option><option>Crónico</option><option>Recurrente</option></select></div>
+      <div class="form-group"><label>Fecha de resolución</label><input type="date" id="e-resolucion"></div>
+      <div class="form-group span2" style="flex-direction:row;align-items:center;gap:20px;padding-top:4px">
+        <label class="checkbox-item"><input type="checkbox" id="e-hosp"> Hospitalización</label>
+        <label class="checkbox-item"><input type="checkbox" id="e-uci" onchange="toggleUciFecha()"> UCI</label>
+        <label class="checkbox-item"><input type="checkbox" id="e-fatal"> Evento fatal</label>
+      </div>
+      <div class="form-group hidden" id="e-uci-fecha-wrap"><label>Fecha ingreso UCI</label><input type="date" id="e-uci-fecha"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" onclick="closeModal('modalEvento')">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarEvento()">Guardar evento</button>
+  </div>
+</div>
+</div>
+
+<script>
+const URL = 'https://uuqpuujjlhkpyisrtvvz.supabase.co';
+const KEY = 'sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
+
+const ANTECEDENTES = ['Alcohol','Autoinmunidad','Cardiopatía','DM2','EPOC','ERC','Hepatopatía','Hipertiroidismo','Hipotiroidismo','HTA','Neoplasia previa','Quimioterapia previa','Radioterapia previa','Tabaquismo','Trasplante previo','TVP/TEP','VIH'];
+const PRUEBAS = ['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica'];
+const DX_MAP = {
+  'Maligno': {
+    'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],
+    'Mieloproliferativa Crónica':['LMC','Síndrome mielodisplásico','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],
+    'Insuficiencia Medular':['Aplasia medular','Hemoglobinuria paroxística nocturna'],
+    'Mieloma':['Mieloma múltiple','MGUS','Plasmocitoma','Macroglobulinemia de Waldenström','Amiloidosis AL'],
+    'Linfoma':['LNH','LH'],
+    'Otros':['Otra']
+  },
+  'Benigno':{'Todos':['Anemia ferropénica','Anemia megaloblástica','AHAI','SD EVANS','PTI','Anemia secundaria/enfermedad crónica','Hemoglobinopatias','Anemia hemolítica hereditaria','Coagulopatia','SAF','Trombofilia Primaria','PTT','SD Hemofagocitico','Otra']}
+};
+
+let allPacientes = [], currentPacId = null;
+
+async function api(method, table, body, params='') {
+  const r = await fetch(`${URL}/rest/v1/${table}${params}`, {
+    method, headers: {'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message||e?.details||'Error '+r.status); }
+  if (r.status===204) return null;
+  return r.json();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const h = new Date();
+  document.getElementById('dash-fecha').textContent = h.toLocaleDateString('es-PE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  ['a-fecha','e-fecha','t-inicio'].forEach(id => { const el=document.getElementById(id); if(el) el.value=h.toISOString().split('T')[0]; });
+  const ag = document.getElementById('antecedentes-grid');
+  ANTECEDENTES.forEach(a => ag.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${a}" name="ant"> ${a}</label>`);
+  const pg = document.getElementById('pruebas-grid');
+  PRUEBAS.forEach(p => pg.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba"> ${p}</label>`);
+  loadDashboard(); loadPacientes(); loadMedicos();
+});
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  if(name==='pacientes') { document.querySelectorAll('.nav-item')[1].classList.add('active'); loadPacientes(); }
+  else if(name==='dashboard') document.querySelectorAll('.nav-item')[0].classList.add('active');
+}
+
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); loadPacsEnSelect(); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function openModalConPaciente(id) {
+  openModal(id);
+  if (!currentPacId) return;
+  const prefix = id==='modalAtencion'?'a':id==='modalTratamiento'?'t':'e';
+  setTimeout(()=>{ const s=document.getElementById(prefix+'-paciente'); if(s){s.value=currentPacId;loadDxPaciente(prefix);if(prefix==='e')loadTratPaciente();} },150);
+}
+
+async function loadDashboard() {
+  try {
+    const hoy = new Date().toISOString().split('T')[0];
+    const mesInicio = new Date(new Date().setDate(1)).toISOString().split('T')[0];
+    const [pacs, atHoy, eventos] = await Promise.all([
+      api('GET','paciente',null,'?select=id,estado_vital'),
+      api('GET','atencion',null,`?select=id,fecha,tipo_atencion,motivo,conducta,paciente_id,medico_id&order=fecha.desc&limit=15`),
+      api('GET','evento_clinico',null,`?select=id&fecha_evento=gte.${mesInicio}`)
+    ]);
+    document.getElementById('stat-total').textContent = pacs.length;
+    document.getElementById('stat-vivos').textContent = pacs.filter(p=>p.estado_vital==='Vivo').length;
+    document.getElementById('stat-atenciones').textContent = atHoy.filter(a=>a.fecha===hoy).length;
+    document.getElementById('stat-eventos').textContent = eventos.length;
+
+    const [meds, ps] = await Promise.all([
+      api('GET','medico',null,'?select=id,nombre_completo'),
+      api('GET','paciente',null,'?select=id,nombre,hc')
+    ]);
+    const mm = Object.fromEntries(meds.map(m=>[m.id,m.nombre_completo]));
+    const pm = Object.fromEntries(ps.map(p=>[p.id,{n:p.nombre,hc:p.hc}]));
+
+    document.getElementById('dash-atenciones').innerHTML = atHoy.length ? `
+      <div class="table-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Paciente</th><th>Tipo</th><th>Motivo</th><th>Conducta</th><th>Médico</th></tr></thead>
+        <tbody>${atHoy.map(a=>`<tr onclick="verPaciente('${a.paciente_id}')">
+          <td style="font-family:var(--mono);font-size:12px">${ff(a.fecha)}</td>
+          <td><strong>${pm[a.paciente_id]?.n||'—'}</strong><br><span style="color:var(--text3);font-size:11px">${pm[a.paciente_id]?.hc||''}</span></td>
+          <td><span class="badge badge-blue">${a.tipo_atencion||'—'}</span></td>
+          <td style="color:var(--text2);font-size:12px">${a.motivo||'—'}</td>
+          <td>${a.conducta?`<span class="badge badge-gray">${a.conducta}</span>`:'—'}</td>
+          <td style="color:var(--text2);font-size:12px">${mm[a.medico_id]||'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>` : '<div class="empty">Sin atenciones registradas aún</div>';
+  } catch(e) {
+    document.getElementById('dash-atenciones').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+  }
+}
+
+async function loadPacientes() {
+  document.getElementById('pacientes-table').innerHTML = '<div class="loading"><div class="spinner"></div> Cargando...</div>';
+  try {
+    allPacientes = await api('GET','paciente',null,'?select=id,hc,nombre,sexo,fecha_nacimiento,seguro,estado_vital,fecha_ingreso_hematologia&order=nombre.asc');
+    renderTabla(allPacientes);
+  } catch(e) {
+    document.getElementById('pacientes-table').innerHTML = `<div class="alert alert-error" style="margin:16px">Error: ${e.message}</div>`;
+  }
+}
+
+function renderTabla(datos) {
+  if (!datos.length) { document.getElementById('pacientes-table').innerHTML='<div class="empty">No hay pacientes registrados</div>'; return; }
+  document.getElementById('pacientes-table').innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>HC</th><th>Nombre</th><th>Edad</th><th>Sexo</th><th>Seguro</th><th>Estado</th><th>Ingreso</th></tr></thead>
+    <tbody>${datos.map(p=>`<tr onclick="verPaciente('${p.id}')">
+      <td style="font-family:var(--mono);font-size:12px;color:var(--text2)">${p.hc}</td>
+      <td><strong>${p.nombre}</strong></td>
+      <td style="font-family:var(--mono)">${edad(p.fecha_nacimiento)||'—'}</td>
+      <td>${p.sexo||'—'}</td>
+      <td>${p.seguro?`<span class="badge badge-blue">${p.seguro}</span>`:'—'}</td>
+      <td>${p.estado_vital==='Fallecido'?'<span class="badge badge-gray">Fallecido</span>':'<span class="badge badge-green">Vivo</span>'}</td>
+      <td style="font-size:12px;color:var(--text2)">${ff(p.fecha_ingreso_hematologia)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function searchPacientes() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const v = document.getElementById('filter-vital').value;
+  renderTabla(allPacientes.filter(p=>(p.nombre?.toLowerCase().includes(q)||p.hc?.toLowerCase().includes(q))&&(!v||p.estado_vital===v)));
+}
+
+async function verPaciente(pacId) {
+  currentPacId = pacId;
+  showSection('detalle');
+  document.getElementById('detalle-content').innerHTML = '<div class="loading"><div class="spinner"></div> Cargando ficha...</div>';
+  try {
+    const [pArr,dxs,ats,trts,evs,meds] = await Promise.all([
+      api('GET','paciente',null,`?id=eq.${pacId}&limit=1`),
+      api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&order=fecha_debut.desc`),
+      api('GET','atencion',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
+      api('GET','tratamiento',null,`?paciente_id=eq.${pacId}&order=fecha_inicio.desc`),
+      api('GET','evento_clinico',null,`?paciente_id=eq.${pacId}&order=fecha_evento.desc`),
+      api('GET','medico',null,'?select=id,nombre_completo')
+    ]);
+    const p = pArr[0];
+    const mm = Object.fromEntries(meds.map(m=>[m.id,m.nombre_completo]));
+    const tl = [
+      ...ats.map(a=>({tipo:'atencion',fecha:a.fecha,d:a,med:mm[a.medico_id]})),
+      ...evs.map(e=>({tipo:'evento',fecha:e.fecha_evento,d:e,med:mm[e.medico_id]})),
+      ...trts.map(t=>({tipo:'tratamiento',fecha:t.fecha_inicio,d:t}))
+    ].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+
+    document.getElementById('detalle-content').innerHTML = `
+      <div class="patient-header">
+        <div>
+          <div class="patient-name">${p.nombre}</div>
+          <div class="patient-meta">HC: <strong>${p.hc}</strong> · ${edad(p.fecha_nacimiento)?edad(p.fecha_nacimiento)+' años':'Sin edad'} · ${p.sexo==='M'?'Masculino':p.sexo==='F'?'Femenino':'—'} · ${p.seguro||'Sin seguro'}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+            ${p.estado_vital==='Fallecido'?'<span class="badge badge-gray">Fallecido</span>':'<span class="badge badge-green">Vivo</span>'}
+            ${dxs[0]?.estado_enfermedad?`<span class="badge badge-blue">${dxs[0].estado_enfermedad}</span>`:''}
+            ${dxs[0]?.diagnostico_especifico?`<span class="badge badge-purple">${dxs[0].diagnostico_especifico}</span>`:''}
+          </div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--text2)">
+          Ingreso hematología: ${ff(p.fecha_ingreso_hematologia)}<br>
+          <span style="color:var(--text3)">${dxs.length} dx · ${ats.length} atenciones · ${trts.length} tratamientos · ${evs.length} eventos</span>
+        </div>
+      </div>
+
+      ${p.antecedentes?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Antecedentes</span></div><div class="card-body" style="padding:12px 16px"><div style="display:flex;flex-wrap:wrap;gap:6px">${p.antecedentes.split(',').filter(a=>a.trim()).map(a=>`<span class="badge badge-amber">${a.trim()}</span>`).join('')}</div>${p.otro_antecedente?`<div style="margin-top:8px;font-size:13px;color:var(--text2)">Otro: ${p.otro_antecedente}</div>`:''}</div></div>`:''}
+
+      ${dxs.length?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Diagnósticos</span></div><div class="table-wrap"><table><thead><tr><th>Fecha debut</th><th>Diagnóstico</th><th>Categoría</th><th>Riesgo</th><th>Estado</th><th>Pruebas</th></tr></thead><tbody>${dxs.map(d=>`<tr><td style="font-family:var(--mono);font-size:12px">${ff(d.fecha_debut)}</td><td><strong>${d.diagnostico_especifico||d.otro_diagnostico||'—'}</strong></td><td>${d.categoria?`<span class="badge ${d.categoria==='Maligno'?'badge-red':'badge-blue'}">${d.categoria}</span>`:'—'}</td><td>${d.estratificacion_riesgo||'—'}</td><td>${d.estado_enfermedad?`<span class="badge badge-purple">${d.estado_enfermedad}</span>`:'—'}</td><td style="font-size:12px;color:var(--text2)">${d.prueba_confirmatoria||'—'}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+
+      <div class="card"><div class="card-header"><span class="card-title">Historia clínica</span><span style="font-size:12px;color:var(--text2)">${tl.length} registros</span></div><div class="card-body">
+        ${tl.length?`<div class="timeline">${tl.map(item=>{
+          const icons={atencion:'📋',evento:'⚠️',tratamiento:'💊'};
+          const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento'};
+          let titulo='',detalle='';
+          if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ');}
+          else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
+          else{titulo=item.d.tipo_tratamiento==='QT'?`${item.d.esquema_qt||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`:(item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento');detalle=item.d.respuesta?'Respuesta: '+item.d.respuesta:'';}
+          return `<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta">${ff(item.fecha)}${item.med?' · '+item.med:''}</div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
+        }).join('')}</div>`:'<div class="empty">Sin registros aún</div>'}
+      </div></div>`;
+  } catch(e) {
+    document.getElementById('detalle-content').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+  }
+}
+
+async function loadMedicos() {
+  try {
+    const meds = await api('GET','medico',null,'?order=nombre_completo');
+    document.getElementById('a-medico').innerHTML = '<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');
+  } catch(e){}
+}
+
+async function loadPacsEnSelect() {
+  try {
+    const ps = await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');
+    const opts = '<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');
+    ['a-paciente','t-paciente','e-paciente'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; });
+  } catch(e){}
+}
+
+async function loadDxPaciente(prefix) {
+  const pacId = document.getElementById(prefix+'-paciente')?.value;
+  if (!pacId) return;
+  try {
+    const dxs = await api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&select=id,diagnostico_especifico,fecha_debut`);
+    const sel = document.getElementById(prefix+'-diagnostico');
+    if (sel) sel.innerHTML = '<option value="">Sin dx específico</option>'+dxs.map(d=>`<option value="${d.id}">${d.diagnostico_especifico||'Sin especificar'} — ${ff(d.fecha_debut)}</option>`).join('');
+  } catch(e){}
+}
+
+async function loadTratPaciente() {
+  const pacId = document.getElementById('e-paciente')?.value;
+  if (!pacId) return;
+  try {
+    const ts = await api('GET','tratamiento',null,`?paciente_id=eq.${pacId}&select=id,tipo_tratamiento,esquema_qt,numero_ciclo`);
+    document.getElementById('e-tratamiento').innerHTML = '<option value="">Sin tratamiento relacionado</option>'+ts.map(t=>`<option value="${t.id}">${t.tipo_tratamiento==='QT'?(t.esquema_qt||'QT')+' C'+(t.numero_ciclo||'?'):t.tipo_tratamiento}</option>`).join('');
+  } catch(e){}
+}
+
+function updateDxEspecifico() {
+  const cat = document.getElementById('d-categoria').value;
+  const prin = document.getElementById('d-principal').value;
+  const sel = document.getElementById('d-especifico');
+  const wrap = document.getElementById('d-principal-wrap');
+  if (cat==='Benigno') { wrap.style.display='none'; sel.innerHTML='<option value="">Seleccionar</option>'+DX_MAP.Benigno.Todos.map(o=>`<option>${o}</option>`).join(''); }
+  else if (cat==='Maligno') { wrap.style.display='flex'; const opts=prin&&DX_MAP.Maligno[prin]?DX_MAP.Maligno[prin]:Object.values(DX_MAP.Maligno).flat(); sel.innerHTML='<option value="">Seleccionar</option>'+opts.map(o=>`<option>${o}</option>`).join(''); }
+  else { wrap.style.display='flex'; sel.innerHTML='<option value="">Seleccionar categoría primero</option>'; }
+}
+
+function toggleTratFields() {
+  const tipo = document.getElementById('t-tipo').value;
+  document.getElementById('t-esquema-wrap').classList.toggle('hidden', tipo==='Benigno'||tipo==='Paliativo');
+  document.getElementById('t-benigno-wrap').classList.toggle('hidden', tipo!=='Benigno');
+  document.getElementById('t-otro-wrap').classList.toggle('hidden', tipo!=='Benigno');
+  document.getElementById('t-ciclo-wrap').classList.toggle('hidden', tipo!=='QT');
+}
+
+function toggleUciFecha() { document.getElementById('e-uci-fecha-wrap').classList.toggle('hidden', !document.getElementById('e-uci').checked); }
+
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  if (type==='success') setTimeout(()=>el.innerHTML='', 3000);
+}
+
+function ff(f) { if(!f) return '—'; return new Date(f+'T12:00:00').toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function edad(fnac) { if(!fnac) return null; const h=new Date(),n=new Date(fnac); let e=h.getFullYear()-n.getFullYear(); if(h<new Date(h.getFullYear(),n.getMonth(),n.getDate()))e--; return e; }
+function getChecked(name) { return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(c=>c.value).join(', '); }
+function v(id) { return document.getElementById(id)?.value||null; }
+
+async function guardarPaciente() {
+  const hc=v('p-hc')?.trim(), nombre=v('p-nombre')?.trim();
+  if (!hc||!nombre) return showAlert('alert-paciente','error','HC y nombre son obligatorios.');
+  try {
+    const res = await api('POST','paciente',{hc,nombre,sexo:v('p-sexo'),fecha_nacimiento:v('p-fnac'),fecha_ingreso_hematologia:v('p-fingreso'),seguro:v('p-seguro'),estado_vital:v('p-estado-vital')||'Vivo',antecedentes:getChecked('ant')||null,otro_antecedente:document.getElementById('p-otro-ant').value.trim()||null});
+    const pac = Array.isArray(res)?res[0]:res;
+    const dxEsp=v('d-especifico'), dxFecha=v('d-fecha');
+    if (dxEsp||dxFecha) await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_enfermedad:v('d-estado'),prueba_confirmatoria:getChecked('prueba')||null});
+    showAlert('alert-paciente','success','✓ Paciente registrado correctamente.');
+    setTimeout(()=>{ closeModal('modalPaciente'); loadPacientes(); loadDashboard(); },1500);
+  } catch(e) { showAlert('alert-paciente','error','Error: '+e.message); }
+}
+
+async function guardarAtencion() {
+  const pacId=v('a-paciente'), tipo=v('a-tipo'), fecha=v('a-fecha');
+  if (!pacId||!tipo||!fecha) return showAlert('alert-atencion','error','Paciente, tipo y fecha son obligatorios.');
+  try {
+    await api('POST','atencion',{paciente_id:pacId,diagnostico_id:v('a-diagnostico'),fecha,tipo_atencion:tipo,medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta')});
+    showAlert('alert-atencion','success','✓ Atención registrada.');
+    setTimeout(()=>{ closeModal('modalAtencion'); loadDashboard(); if(currentPacId===pacId) verPaciente(pacId); },1500);
+  } catch(e) { showAlert('alert-atencion','error','Error: '+e.message); }
+}
+
+async function guardarTratamiento() {
+  const pacId=v('t-paciente'), tipo=v('t-tipo');
+  if (!pacId||!tipo) return showAlert('alert-tratamiento','error','Paciente y tipo son obligatorios.');
+  try {
+    await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:v('t-esquema'),tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta')});
+    showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');
+    setTimeout(()=>{ closeModal('modalTratamiento'); if(currentPacId===pacId) verPaciente(pacId); },1500);
+  } catch(e) { showAlert('alert-tratamiento','error','Error: '+e.message); }
+}
+
+async function guardarEvento() {
+  const pacId=v('e-paciente'), tipo=v('e-tipo'), fecha=v('e-fecha');
+  if (!pacId||!tipo||!fecha) return showAlert('alert-evento','error','Paciente, tipo y fecha son obligatorios.');
+  try {
+    await api('POST','evento_clinico',{paciente_id:pacId,diagnostico_id:v('e-diagnostico'),tratamiento_id:v('e-tratamiento'),tipo_evento:tipo,fecha_evento:fecha,sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked});
+    showAlert('alert-evento','success','✓ Evento registrado.');
+    setTimeout(()=>{ closeModal('modalEvento'); if(currentPacId===pacId) verPaciente(pacId); },1500);
+  } catch(e) { showAlert('alert-evento','error','Error: '+e.message); }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){ if(e.target===this) this.classList.add('hidden'); }));
+</script>
+</body>
+</html>
