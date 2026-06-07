@@ -438,6 +438,8 @@ function actualizarOpcionesRespuesta(dxEspecifico){
   const valActual=sel.value;
   sel.innerHTML='<option value="">Seleccionar</option>'+opciones.map(o=>`<option${valActual===o?' selected':''}>${o}</option>`).join('');
 }
+
+async function api(method,table,body,params=''){
   const r=await fetch(`${URL}/rest/v1/${table}${params}`,{method,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':method==='PATCH'?'return=representation':''},body:body?JSON.stringify(body):undefined});
   if(!r.ok){const e=await r.json().catch(()=>{});throw new Error(e?.message||e?.details||'Error '+r.status);}
   if(r.status===204)return null;
