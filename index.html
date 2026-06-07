@@ -799,8 +799,12 @@ async function editarRegistro(tipo, id){
         sv('t-benigno',r.tipo_tratamiento_benigno);svt('t-otro-benigno',r.otro_benigno);
         svi('t-ciclo',r.numero_ciclo);sv('t-inicio',r.fecha_inicio);
         // Cargar opciones de respuesta según diagnóstico
-        const dxSel=document.getElementById('t-diagnostico');
-        if(dxSel){const opt=[...dxSel.options].find(o=>o.value===r.diagnostico_id);actualizarOpcionesRespuesta(opt?.dataset?.dx||'');}
+        if(r.diagnostico_id){
+          try{
+            const dxArr=await api('GET','diagnostico',null,`?id=eq.${r.diagnostico_id}&select=diagnostico_especifico&limit=1`);
+            if(dxArr&&dxArr[0])actualizarOpcionesRespuesta(dxArr[0].diagnostico_especifico||'');
+          }catch(e){actualizarOpcionesRespuesta('');}
+        } else { actualizarOpcionesRespuesta(''); }
         sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);sv('t-fecha-respuesta',r.fecha_respuesta);
         document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
         document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
