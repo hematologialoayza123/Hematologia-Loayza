@@ -170,6 +170,7 @@ label span.req{color:var(--accent)}
       <button class="btn btn-ghost btn-sm" onclick="showSection('pacientes')">← Volver</button>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-amber btn-sm" onclick="abrirEditarPaciente()">✏️ Editar</button>
+        <button class="btn btn-sm" style="background:var(--accent-bg);color:var(--accent);border:1px solid #f5c6c2" onclick="eliminarPaciente()">🗑️ Eliminar paciente</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Dx</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalAtencion')">+ Atención</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalTratamiento')">+ Tratamiento</button>
@@ -679,6 +680,19 @@ async function guardarProcedimiento(){
   const pacId=v('pr-paciente'),tipo=v('pr-tipo'),fecha=v('pr-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-procedimiento','error','Paciente, tipo y fecha son obligatorios.');
   try{await api('POST','procedimiento',{paciente_id:pacId,diagnostico_id:v('pr-diagnostico'),medico_id:v('pr-medico'),fecha,tipo,descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null});showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-procedimiento','error','Error: '+e.message);}
 }
+// ===== ELIMINAR PACIENTE =====
+async function eliminarPaciente(){
+  if(!currentPacId)return;
+  const nombre=currentPacData?.nombre||'este paciente';
+  if(!confirm(`¿Eliminar a ${nombre} y TODOS sus registros?\n\nEsto incluye diagnósticos, atenciones, tratamientos, eventos, laboratorios y procedimientos.\n\nEsta acción NO se puede deshacer.`))return;
+  try{
+    await api('DELETE','paciente',null,`?id=eq.${currentPacId}`);
+    currentPacId=null;currentPacData=null;
+    showSection('pacientes');
+    loadPacientes();
+  }catch(e){alert('Error al eliminar paciente: '+e.message);}
+}
+
 // ===== ELIMINAR =====
 async function eliminarRegistro(tabla, id, pacId){
   if(!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.'))return;
