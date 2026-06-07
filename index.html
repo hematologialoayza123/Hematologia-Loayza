@@ -323,8 +323,9 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="e-paciente" onchange="loadDxPaciente('e');loadTratPaciente()"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="e-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group span2"><label>Tratamiento relacionado</label><select id="e-tratamiento"><option value="">Seleccionar</option></select></div>
-      <div class="form-group"><label>Tipo de evento <span class="req">*</span></label><select id="e-tipo"><option value="">Seleccionar</option><option>Toxicidad</option><option>Complicación</option><option>Evento adverso</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de evento <span class="req">*</span></label><select id="e-tipo" onchange="toggleRecaida()"><option value="">Seleccionar</option><option>Toxicidad</option><option>Complicación</option><option>Evento adverso</option><option>Recaída</option><option>Progresión</option><option>Otro</option></select></div>
       <div class="form-group"><label>Fecha del evento</label><input type="date" id="e-fecha"></div>
+      <div class="form-group span2 hidden" id="e-recaida-wrap"><label>Tipo de recaída / pérdida de respuesta</label><select id="e-tipo-recaida"><option value="">Seleccionar</option><option>Recaída morfológica</option><option>Recaída por EMR</option><option>Recaída citogenética</option><option>Recaída molecular</option><option>Pérdida de respuesta hematológica</option><option>Pérdida de respuesta citogenética</option><option>Pérdida de respuesta molecular</option><option>Progresión morfológica</option><option>No aplica</option></select></div>
       <div class="form-group"><label>Sistema comprometido</label><select id="e-sistema"><option value="">Seleccionar</option><option>Hematologica</option><option>Gastrointestinal</option><option>Hepatica</option><option>Renal</option><option>Neurologica</option><option>Cardiaca</option><option>Pulmonar</option><option>Dermatológica</option><option>Metabólica</option><option>Infeccioso</option><option>Otra</option></select></div>
       <div class="form-group"><label>Grado</label><select id="e-grado"><option value="">Seleccionar</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
       <div class="form-group"><label>Estado</label><select id="e-estado"><option value="">Seleccionar</option><option>Mejora</option><option>Persistente</option><option>Activo</option><option>Crónico</option><option>Recurrente</option></select></div>
@@ -602,7 +603,7 @@ async function verPaciente(pacId){
           const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento'};
           let titulo='',detalle='';
           if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';const extras=[];if(item.d.ecog)extras.push('ECOG '+item.d.ecog);if(item.d.charlson_score!=null)extras.push('Charlson '+item.d.charlson_score);if(item.d.peso_kg)extras.push(item.d.peso_kg+'kg');detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ')+(extras.length?' · '+extras.join(' · '):'');if(item.d.notas)detalle+=(detalle?'<br>':'')+'<em>'+item.d.notas+'</em>';}
-          else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
+          else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.tipo_recaida?item.d.tipo_recaida:null,item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
           else if(item.tipo==='tratamiento'){titulo=item.d.tipo_tratamiento==='QT'?`${item.d.esquema_qt||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`:item.d.tipo_tratamiento==='Inmunoterapia'?`Inmunoterapia: ${item.d.esquema_qt||'—'}`:(item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento');detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.emr?'EMR: '+item.d.emr:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');}          else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_enfermedad||'';}
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
           else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
@@ -663,6 +664,10 @@ function toggleTratFields(){
   document.getElementById('t-otro-wrap').classList.toggle('hidden',tipo!=='Benigno');
   document.getElementById('t-ciclo-wrap').classList.toggle('hidden',tipo!=='QT');
 }
+function toggleRecaida(){
+  const tipo=document.getElementById('e-tipo').value;
+  document.getElementById('e-recaida-wrap').classList.toggle('hidden',tipo!=='Recaída'&&tipo!=='Progresión');
+}
 function toggleUciFecha(){document.getElementById('e-uci-fecha-wrap').classList.toggle('hidden',!document.getElementById('e-uci').checked);}
 function showAlert(id,type,msg){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="alert alert-${type}">${msg}</div>`;if(type==='success')setTimeout(()=>el.innerHTML='',3000);}
 function ff(f){if(!f)return'—';return new Date(f+'T12:00:00').toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});}
@@ -718,7 +723,7 @@ async function guardarTratamiento(){
 }
 async function guardarEvento(){
   const pacId=v('e-paciente'),tipo=v('e-tipo'),fecha=v('e-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-evento','error','Paciente, tipo y fecha son obligatorios.');
-  try{await api('POST','evento_clinico',{paciente_id:pacId,diagnostico_id:v('e-diagnostico'),tratamiento_id:v('e-tratamiento'),tipo_evento:tipo,fecha_evento:fecha,sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked});showAlert('alert-evento','success','✓ Evento registrado.');setTimeout(()=>{closeModal('modalEvento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-evento','error','Error: '+e.message);}
+  try{await api('POST','evento_clinico',{paciente_id:pacId,diagnostico_id:v('e-diagnostico'),tratamiento_id:v('e-tratamiento'),tipo_evento:tipo,fecha_evento:fecha,sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),tipo_recaida:v('e-tipo-recaida'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked});showAlert('alert-evento','success','✓ Evento registrado.');setTimeout(()=>{closeModal('modalEvento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-evento','error','Error: '+e.message);}
 }
 async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
@@ -823,7 +828,7 @@ async function editarRegistro(tipo, id){
       setTimeout(async()=>{
         sv('e-paciente',r.paciente_id);await loadDxPaciente('e');await loadTratPaciente();
         sv('e-diagnostico',r.diagnostico_id);sv('e-tratamiento',r.tratamiento_id);
-        sv('e-tipo',r.tipo_evento);sv('e-fecha',r.fecha_evento);
+        sv('e-tipo',r.tipo_evento);toggleRecaida();sv('e-tipo-recaida',r.tipo_recaida);sv('e-fecha',r.fecha_evento);
         sv('e-sistema',r.sistema_comprometido);sv('e-grado',r.grado);
         sv('e-estado',r.estado);sv('e-resolucion',r.fecha_resolucion);
         document.getElementById('e-hosp').checked=r.requirio_hospitalizacion||false;
@@ -831,7 +836,7 @@ async function editarRegistro(tipo, id){
         document.getElementById('e-fatal').checked=r.evento_fatal||false;
         sv('e-uci-fecha',r.fecha_ingreso_uci);toggleUciFecha();
         document.querySelector('#modalEvento .modal-title').textContent='Editar evento';
-        document.querySelector('#modalEvento .btn-primary').onclick=()=>actualizarRegistro('evento_clinico',id,{tipo_evento:v('e-tipo'),fecha_evento:v('e-fecha'),sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked},'modalEvento','alert-evento');
+        document.querySelector('#modalEvento .btn-primary').onclick=()=>actualizarRegistro('evento_clinico',id,{tipo_evento:v('e-tipo'),fecha_evento:v('e-fecha'),sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),tipo_recaida:v('e-tipo-recaida'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked},'modalEvento','alert-evento');
       },200);
     }
     else if(tipo==='laboratorio'){
