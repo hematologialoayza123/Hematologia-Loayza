@@ -575,7 +575,9 @@ async function verPaciente(pacId){
           else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_enfermedad||'';}
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
           else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
-          return`<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta">${ff(item.fecha)}${item.med?' · '+item.med:''}</div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
+          const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento'};
+          const tbl=tableMap[item.tipo];
+          return`<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta" style="display:flex;justify-content:space-between;align-items:center"><span>${ff(item.fecha)}${item.med?' · '+item.med:''}</span><span style="display:flex;gap:4px"><button onclick="editarRegistro('${item.tipo}','${item.d.id}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--text2)" title="Editar">✏️</button><button onclick="eliminarRegistro('${tbl}','${item.d.id}','${currentPacId}')" style="background:none;border:1px solid #f5c6c2;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--accent)" title="Eliminar">🗑️</button></span></div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
         }).join('')}</div>`:'<div class="empty">Sin registros aún</div>'}
       </div></div>`;
   }catch(e){document.getElementById('detalle-content').innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`;}
@@ -677,6 +679,149 @@ async function guardarProcedimiento(){
   const pacId=v('pr-paciente'),tipo=v('pr-tipo'),fecha=v('pr-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-procedimiento','error','Paciente, tipo y fecha son obligatorios.');
   try{await api('POST','procedimiento',{paciente_id:pacId,diagnostico_id:v('pr-diagnostico'),medico_id:v('pr-medico'),fecha,tipo,descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null});showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-procedimiento','error','Error: '+e.message);}
 }
+// ===== ELIMINAR =====
+async function eliminarRegistro(tabla, id, pacId){
+  if(!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.'))return;
+  try{
+    await api('DELETE',tabla,null,`?id=eq.${id}`);
+    verPaciente(pacId);
+  }catch(e){alert('Error al eliminar: '+e.message);}
+}
+
+// ===== EDITAR =====
+async function editarRegistro(tipo, id){
+  try{
+    if(tipo==='atencion'){
+      const r=(await api('GET','atencion',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      await loadMedicos();
+      openModal('modalAtencion');
+      setTimeout(async()=>{
+        sv('a-paciente',r.paciente_id);await loadDxPaciente('a');
+        sv('a-diagnostico',r.diagnostico_id);sv('a-fecha',r.fecha);
+        sv('a-tipo',r.tipo_atencion);sv('a-medico',r.medico_id);
+        sv('a-motivo',r.motivo);sv('a-conducta',r.conducta);
+        sv('a-ecog',r.ecog);svi('a-charlson',r.charlson_score);
+        svn('a-peso',r.peso_kg);svn('a-talla',r.talla_cm);
+        svt('a-notas',r.notas);
+        // Cambiar modo a edición
+        document.querySelector('#modalAtencion .modal-title').textContent='Editar atención';
+        document.querySelector('#modalAtencion .btn-primary').onclick=()=>actualizarRegistro('atencion',id,{fecha:v('a-fecha'),tipo_atencion:v('a-tipo'),medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta'),ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),talla_cm:vn('a-talla'),notas:document.getElementById('a-notas').value.trim()||null},'modalAtencion','alert-atencion');
+      },200);
+    }
+    else if(tipo==='diagnostico'){
+      const r=(await api('GET','diagnostico',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      openModal('modalDiagnostico');
+      setTimeout(()=>{
+        sv('dx-paciente',r.paciente_id);sv('dx-fecha',r.fecha_debut);
+        sv('dx-categoria',r.categoria);updateDxEspecifico('dx');
+        setTimeout(()=>{sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
+          setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
+        svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
+        sv('dx-estado',r.estado_enfermedad);sv('dx-ecog-basal',r.ecog_basal);
+        svi('dx-charlson-basal',r.charlson_basal);svn('dx-peso-basal',r.peso_basal);
+        svn('dx-talla',r.talla_cm);
+        if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
+        document.querySelector('#modalDiagnostico .modal-title').textContent='Editar diagnóstico';
+        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),estado_enfermedad:v('dx-estado'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla')},'modalDiagnostico','alert-diagnostico');
+      },200);
+    }
+    else if(tipo==='tratamiento'){
+      const r=(await api('GET','tratamiento',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      openModal('modalTratamiento');
+      setTimeout(async()=>{
+        sv('t-paciente',r.paciente_id);await loadDxPaciente('t');
+        sv('t-diagnostico',r.diagnostico_id);sv('t-tipo',r.tipo_tratamiento);
+        toggleTratFields();
+        if(r.tipo_tratamiento==='Inmunoterapia')sv('t-inmunoterapia',r.esquema_qt);
+        else sv('t-esquema',r.esquema_qt);
+        sv('t-benigno',r.tipo_tratamiento_benigno);svt('t-otro-benigno',r.otro_benigno);
+        svi('t-ciclo',r.numero_ciclo);sv('t-inicio',r.fecha_inicio);
+        sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);
+        document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
+        document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
+          const tipo2=v('t-tipo');const esq=tipo2==='Inmunoterapia'?v('t-inmunoterapia'):v('t-esquema');
+          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta')},'modalTratamiento','alert-tratamiento');
+        };
+      },200);
+    }
+    else if(tipo==='evento'){
+      const r=(await api('GET','evento_clinico',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      openModal('modalEvento');
+      setTimeout(async()=>{
+        sv('e-paciente',r.paciente_id);await loadDxPaciente('e');await loadTratPaciente();
+        sv('e-diagnostico',r.diagnostico_id);sv('e-tratamiento',r.tratamiento_id);
+        sv('e-tipo',r.tipo_evento);sv('e-fecha',r.fecha_evento);
+        sv('e-sistema',r.sistema_comprometido);sv('e-grado',r.grado);
+        sv('e-estado',r.estado);sv('e-resolucion',r.fecha_resolucion);
+        document.getElementById('e-hosp').checked=r.requirio_hospitalizacion||false;
+        document.getElementById('e-uci').checked=r.requirio_uci||false;
+        document.getElementById('e-fatal').checked=r.evento_fatal||false;
+        sv('e-uci-fecha',r.fecha_ingreso_uci);toggleUciFecha();
+        document.querySelector('#modalEvento .modal-title').textContent='Editar evento';
+        document.querySelector('#modalEvento .btn-primary').onclick=()=>actualizarRegistro('evento_clinico',id,{tipo_evento:v('e-tipo'),fecha_evento:v('e-fecha'),sistema_comprometido:v('e-sistema'),grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked},'modalEvento','alert-evento');
+      },200);
+    }
+    else if(tipo==='laboratorio'){
+      const r=(await api('GET','laboratorio',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      openModal('modalLaboratorio');loadMedicosEnModal('modalLaboratorio');
+      setTimeout(async()=>{
+        sv('l-paciente',r.paciente_id);await loadDxPaciente('l');
+        sv('l-diagnostico',r.diagnostico_id);sv('l-fecha',r.fecha);
+        sv('l-tipo',r.tipo_examen);svt('l-origen',r.laboratorio_origen);
+        sv('l-medico',r.medico_id);
+        svn('l-hb',r.hemoglobina);svn('l-hto',r.hematocrito);
+        svn('l-leuco',r.leucocitos);svn('l-plaq',r.plaquetas);
+        svn('l-neutro',r.neutrofilos);svn('l-neutro-pct',r.neutrofilos_pct);
+        svn('l-linfo',r.linfocitos);svn('l-blastos-s',r.blastos_sangre);
+        svn('l-blastos-m',r.blastos_medula);sv('l-celularidad',r.celularidad);
+        svn('l-ldh',r.ldh);svn('l-b2m',r.beta2_microglobulina);
+        svn('l-alb',r.albumina);svn('l-creat',r.creatinina);
+        svn('l-ferrit',r.ferritina);svn('l-b12',r.vitamina_b12);
+        svn('l-folico',r.acido_folico);svn('l-bili',r.bilirrubina);
+        svt('l-resultado',r.resultado_texto);
+        document.querySelector('#modalLaboratorio .modal-title').textContent='Editar laboratorio';
+        document.querySelector('#modalLaboratorio .btn-primary').onclick=()=>actualizarRegistro('laboratorio',id,{fecha:v('l-fecha'),tipo_examen:v('l-tipo'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,medico_id:v('l-medico'),hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),resultado_texto:document.getElementById('l-resultado').value.trim()||null},'modalLaboratorio','alert-laboratorio');
+      },200);
+    }
+    else if(tipo==='procedimiento'){
+      const r=(await api('GET','procedimiento',null,`?id=eq.${id}&limit=1`))[0];
+      await loadPacsEnSelect();
+      openModal('modalProcedimiento');loadMedicosEnModal('modalProcedimiento');
+      setTimeout(async()=>{
+        sv('pr-paciente',r.paciente_id);await loadDxPaciente('pr');
+        sv('pr-diagnostico',r.diagnostico_id);sv('pr-fecha',r.fecha);
+        sv('pr-tipo',r.tipo);sv('pr-medico',r.medico_id);
+        svt('pr-descripcion',r.descripcion);svt('pr-hallazgos',r.hallazgos);
+        svt('pr-resultado',r.resultado_anatomopat);svt('pr-complicaciones',r.complicaciones);
+        document.querySelector('#modalProcedimiento .modal-title').textContent='Editar procedimiento';
+        document.querySelector('#modalProcedimiento .btn-primary').onclick=()=>actualizarRegistro('procedimiento',id,{fecha:v('pr-fecha'),tipo:v('pr-tipo'),medico_id:v('pr-medico'),descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null},'modalProcedimiento','alert-procedimiento');
+      },200);
+    }
+  }catch(e){alert('Error al cargar registro: '+e.message);}
+}
+
+async function actualizarRegistro(tabla, id, datos, modalId, alertId){
+  try{
+    await api('PATCH',tabla,datos,`?id=eq.${id}`);
+    showAlert(alertId,'success','✓ Registro actualizado.');
+    // Restaurar título y botón original
+    const titulos={atencion:'Registrar atención',diagnostico:'Agregar diagnóstico',tratamiento:'Registrar tratamiento',evento_clinico:'Registrar evento clínico',laboratorio:'Registrar laboratorio',procedimiento:'Registrar procedimiento'};
+    document.querySelector(`#${modalId} .modal-title`).textContent=titulos[tabla]||'Editar';
+    setTimeout(()=>{closeModal(modalId);verPaciente(currentPacId);},1200);
+  }catch(e){showAlert(alertId,'error','Error: '+e.message);}
+}
+
+// Helpers para pre-llenar formularios
+function sv(id,val){const el=document.getElementById(id);if(el&&val!=null)el.value=val;}
+function svn(id,val){const el=document.getElementById(id);if(el)el.value=val!=null?val:'';}
+function svi(id,val){const el=document.getElementById(id);if(el)el.value=val!=null?val:'';}
+function svt(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
+
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden');}));
 </script>
 </body>
