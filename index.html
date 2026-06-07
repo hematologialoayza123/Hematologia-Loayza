@@ -307,6 +307,7 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Fecha de inicio</label><input type="date" id="t-inicio"></div>
       <div class="form-group"><label>Fecha de fin</label><input type="date" id="t-fin"></div>
       <div class="form-group"><label>Respuesta</label><select id="t-respuesta" onchange=""><option value="">Seleccionar diagnóstico primero</option></select></div>
+      <div class="form-group"><label>EMR</label><select id="t-emr"><option value="">—</option><option>Negativa</option><option>Positiva</option><option>No evaluada</option><option>No aplica</option></select></div>
       <div class="form-group"><label>Fecha de respuesta</label><input type="date" id="t-fecha-respuesta"></div>
     </div>
   </div>
@@ -414,7 +415,7 @@ const DX_MAP={'Maligno':{'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],'M
 let allPacientes=[],currentPacId=null,currentPacData=null;
 
 const RESPUESTAS={
-  'leucemia_aguda':['RC (Remisión completa)','RCi (RC con recuperación incompleta)','RCm (RC morfológica)','MLFS (Estado libre de leucemia morfológica)','EMR negativa','EMR positiva','Respuesta parcial','Fallo al tratamiento','Recaída','Muerte en inducción'],
+  'leucemia_aguda':['RC (Remisión completa)','RCi (RC con recuperación incompleta)','RCm (RC morfológica)','MLFS (Estado libre de leucemia morfológica)','Respuesta parcial','Fallo al tratamiento','Recaída','Muerte en inducción'],
   'mieloproliferativa':['Respuesta hematológica completa','Respuesta citogenética completa','Respuesta citogenética parcial','Respuesta molecular mayor (MMR)','Respuesta molecular profunda (MR4)','Respuesta molecular profunda (MR4.5)','Fallo','Progresión','Recaída'],
   'mieloma':['RCe (Respuesta completa estricta)','RC (Respuesta completa)','MBRP (Muy buena respuesta parcial)','RP (Respuesta parcial)','Respuesta mínima','Enfermedad estable','Progresión','Recaída'],
   'linfoma':['RMC (Respuesta metabólica completa) Deauville 1-2','RMP (Respuesta metabólica parcial) Deauville 3-4','Enfermedad estable metabólica','Progresión metabólica','Recaída'],
@@ -602,7 +603,7 @@ async function verPaciente(pacId){
           let titulo='',detalle='';
           if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';const extras=[];if(item.d.ecog)extras.push('ECOG '+item.d.ecog);if(item.d.charlson_score!=null)extras.push('Charlson '+item.d.charlson_score);if(item.d.peso_kg)extras.push(item.d.peso_kg+'kg');detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ')+(extras.length?' · '+extras.join(' · '):'');if(item.d.notas)detalle+=(detalle?'<br>':'')+'<em>'+item.d.notas+'</em>';}
           else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
-          else if(item.tipo==='tratamiento'){titulo=item.d.tipo_tratamiento==='QT'?`${item.d.esquema_qt||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`:item.d.tipo_tratamiento==='Inmunoterapia'?`Inmunoterapia: ${item.d.esquema_qt||'—'}`:(item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento');detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');}          else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_enfermedad||'';}
+          else if(item.tipo==='tratamiento'){titulo=item.d.tipo_tratamiento==='QT'?`${item.d.esquema_qt||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`:item.d.tipo_tratamiento==='Inmunoterapia'?`Inmunoterapia: ${item.d.esquema_qt||'—'}`:(item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento');detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.emr?'EMR: '+item.d.emr:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');}          else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_enfermedad||'';}
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
           else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
           const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento'};
@@ -713,7 +714,7 @@ async function guardarAtencion(){
 async function guardarTratamiento(){
   const pacId=v('t-paciente'),tipo=v('t-tipo');if(!pacId||!tipo)return showAlert('alert-tratamiento','error','Paciente y tipo son obligatorios.');
   const esquema=tipo==='Inmunoterapia'?v('t-inmunoterapia'):v('t-esquema');
-  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
+  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
 }
 async function guardarEvento(){
   const pacId=v('e-paciente'),tipo=v('e-tipo'),fecha=v('e-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-evento','error','Paciente, tipo y fecha son obligatorios.');
@@ -807,11 +808,11 @@ async function editarRegistro(tipo, id){
             if(dxArr&&dxArr[0])actualizarOpcionesRespuesta(dxArr[0].diagnostico_especifico||'');
           }catch(e){actualizarOpcionesRespuesta('');}
         } else { actualizarOpcionesRespuesta(''); }
-        sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);sv('t-fecha-respuesta',r.fecha_respuesta);
+        sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);sv('t-emr',r.emr);sv('t-fecha-respuesta',r.fecha_respuesta);
         document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
         document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
           const tipo2=v('t-tipo');const esq=tipo2==='Inmunoterapia'?v('t-inmunoterapia'):v('t-esquema');
-          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
+          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
         };
       },200);
     }
