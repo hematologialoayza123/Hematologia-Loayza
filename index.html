@@ -306,7 +306,7 @@ label span.req{color:var(--accent)}
       <div class="form-group hidden" id="t-ciclo-wrap"><label>Número de ciclo</label><input type="number" id="t-ciclo" min="1" placeholder="1"></div>
       <div class="form-group"><label>Fecha de inicio</label><input type="date" id="t-inicio"></div>
       <div class="form-group"><label>Fecha de fin</label><input type="date" id="t-fin"></div>
-      <div class="form-group"><label>Respuesta</label><select id="t-respuesta"><option value="">Seleccionar</option><option>Completa estricta</option><option>Completa</option><option>Muy buena parcial</option><option>Parcial</option><option>Enfermedad Estable</option><option>Refractario</option><option>Progresión</option><option>Recaída</option></select></div>
+      <div class="form-group"><label>Respuesta</label><select id="t-respuesta" onchange=""><option value="">Seleccionar diagnóstico primero</option></select></div>
       <div class="form-group"><label>Fecha de respuesta</label><input type="date" id="t-fecha-respuesta"></div>
     </div>
   </div>
@@ -413,7 +413,31 @@ const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','
 const DX_MAP={'Maligno':{'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],'Mieloproliferativa Crónica':['LMC','Síndrome mielodisplásico','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],'Insuficiencia Medular':['Aplasia medular','Hemoglobinuria paroxística nocturna'],'Mieloma':['Mieloma múltiple','MGUS','Plasmocitoma','Macroglobulinemia de Waldenström','Amiloidosis AL'],'Linfoma':['LNH','LH'],'Otros':['Otra']},'Benigno':{'Todos':['Anemia ferropénica','Anemia megaloblástica','AHAI','SD EVANS','PTI','Anemia secundaria/enfermedad crónica','Hemoglobinopatias','Anemia hemolítica hereditaria','Coagulopatia','SAF','Trombofilia Primaria','PTT','SD Hemofagocitico','Otra']}};
 let allPacientes=[],currentPacId=null,currentPacData=null;
 
-async function api(method,table,body,params=''){
+const RESPUESTAS={
+  'leucemia_aguda':['RC (Remisión completa)','RCi (RC con recuperación incompleta)','RCm (RC morfológica)','MLFS (Estado libre de leucemia morfológica)','EMR negativa','EMR positiva','Respuesta parcial','Fallo al tratamiento','Recaída','Muerte en inducción'],
+  'mieloproliferativa':['Respuesta hematológica completa','Respuesta citogenética completa','Respuesta citogenética parcial','Respuesta molecular mayor (MMR)','Respuesta molecular profunda (MR4)','Respuesta molecular profunda (MR4.5)','Fallo','Progresión','Recaída'],
+  'mieloma':['RCe (Respuesta completa estricta)','RC (Respuesta completa)','MBRP (Muy buena respuesta parcial)','RP (Respuesta parcial)','Respuesta mínima','Enfermedad estable','Progresión','Recaída'],
+  'linfoma':['RMC (Respuesta metabólica completa) Deauville 1-2','RMP (Respuesta metabólica parcial) Deauville 3-4','Enfermedad estable metabólica','Progresión metabólica','Recaída'],
+  'smd_insuf':['Respuesta completa','Respuesta parcial','Mejoría hematológica','Estable','Progresión','Transformación a LMA'],
+  'general':['Remisión completa','Remisión parcial','Respuesta completa','Sin respuesta','Mejoría','Estable','Progresión','Recaída']
+};
+
+const DX_RESPUESTA_MAP={
+  'LMA':'leucemia_aguda','LPA':'leucemia_aguda','LLA-B':'leucemia_aguda','LLA-T':'leucemia_aguda','LLC':'leucemia_aguda',
+  'LMC':'mieloproliferativa','Síndrome mielodisplásico':'smd_insuf','Policitemia vera':'mieloproliferativa','Trombocitemia esencial':'mieloproliferativa','Mielofibrosis primaria':'mieloproliferativa','Neoplasia mieloproliferativa no especificada':'mieloproliferativa',
+  'Aplasia medular':'smd_insuf','Hemoglobinuria paroxística nocturna':'smd_insuf',
+  'Mieloma múltiple':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma','Macroglobulinemia de Waldenström':'mieloma','Amiloidosis AL':'mieloma',
+  'LNH':'linfoma','LH':'linfoma'
+};
+
+function actualizarOpcionesRespuesta(dxEspecifico){
+  const sel=document.getElementById('t-respuesta');
+  if(!sel)return;
+  const grupo=DX_RESPUESTA_MAP[dxEspecifico]||'general';
+  const opciones=RESPUESTAS[grupo];
+  const valActual=sel.value;
+  sel.innerHTML='<option value="">Seleccionar</option>'+opciones.map(o=>`<option${valActual===o?' selected':''}>${o}</option>`).join('');
+}
   const r=await fetch(`${URL}/rest/v1/${table}${params}`,{method,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':method==='PATCH'?'return=representation':''},body:body?JSON.stringify(body):undefined});
   if(!r.ok){const e=await r.json().catch(()=>{});throw new Error(e?.message||e?.details||'Error '+r.status);}
   if(r.status===204)return null;
@@ -598,7 +622,25 @@ async function loadPacsEnSelect(){
 }
 async function loadDxPaciente(prefix){
   const pacId=document.getElementById(prefix+'-paciente')?.value;if(!pacId)return;
-  try{const dxs=await api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&select=id,diagnostico_especifico,otro_diagnostico,fecha_debut`);const sel=document.getElementById(prefix+'-diagnostico');if(sel)sel.innerHTML='<option value="">Sin dx específico</option>'+dxs.map(d=>`<option value="${d.id}">${d.diagnostico_especifico||d.otro_diagnostico||'Sin especificar'} — ${ff(d.fecha_debut)}</option>`).join('');}catch(e){}
+  try{
+    const dxs=await api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&select=id,diagnostico_especifico,otro_diagnostico,fecha_debut`);
+    const sel=document.getElementById(prefix+'-diagnostico');
+    if(sel){
+      sel.innerHTML='<option value="">Sin dx específico</option>'+dxs.map(d=>`<option value="${d.id}" data-dx="${d.diagnostico_especifico||''}">${d.diagnostico_especifico||d.otro_diagnostico||'Sin especificar'} — ${ff(d.fecha_debut)}</option>`).join('');
+      sel.onchange=()=>{
+        if(prefix==='t'){
+          const opt=sel.options[sel.selectedIndex];
+          const dx=opt?.dataset?.dx||'';
+          actualizarOpcionesRespuesta(dx);
+        }
+      };
+      // Si ya hay una opción seleccionada, actualizar respuestas
+      if(prefix==='t'&&dxs.length===1){
+        sel.value=dxs[0].id;
+        actualizarOpcionesRespuesta(dxs[0].diagnostico_especifico||'');
+      }
+    }
+  }catch(e){}
 }
 async function loadTratPaciente(){
   const pacId=document.getElementById('e-paciente')?.value;if(!pacId)return;
@@ -756,6 +798,9 @@ async function editarRegistro(tipo, id){
         else sv('t-esquema',r.esquema_qt);
         sv('t-benigno',r.tipo_tratamiento_benigno);svt('t-otro-benigno',r.otro_benigno);
         svi('t-ciclo',r.numero_ciclo);sv('t-inicio',r.fecha_inicio);
+        // Cargar opciones de respuesta según diagnóstico
+        const dxSel=document.getElementById('t-diagnostico');
+        if(dxSel){const opt=[...dxSel.options].find(o=>o.value===r.diagnostico_id);actualizarOpcionesRespuesta(opt?.dataset?.dx||'');}
         sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);sv('t-fecha-respuesta',r.fecha_respuesta);
         document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
         document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
