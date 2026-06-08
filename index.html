@@ -448,7 +448,7 @@ label span.req{color:var(--accent)}
 const URL='https://uuqpuujjlhkpyisrtvvz.supabase.co';
 const KEY='sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
 const ANTECEDENTES=['Alcohol','Autoinmunidad','Cardiopatía','DM2','EPOC','ERC','Hepatopatía','Hipertiroidismo','Hipotiroidismo','HTA','Neoplasia previa','Quimioterapia previa','Radioterapia previa','Tabaquismo','Trasplante previo','TVP/TEP','VIH'];
-const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica'];
+const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica','Electroforesis de Hb','Otro'];
 const DX_MAP={
   'Maligno':{
     'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T'],
@@ -785,11 +785,18 @@ function updateDxEspecifico(prefix){
 }
 function toggleTratFields(){
   const tipo=document.getElementById('t-tipo').value;
-  document.getElementById('t-esquema-wrap').classList.toggle('hidden',tipo==='Benigno'||tipo==='Paliativo'||tipo==='Inmunoterapia');
-  document.getElementById('t-inmu-wrap').classList.toggle('hidden',tipo!=='Inmunoterapia');
-  document.getElementById('t-benigno-wrap').classList.toggle('hidden',tipo!=='Benigno');
-  document.getElementById('t-otro-wrap').classList.toggle('hidden',tipo!=='Benigno');
-  document.getElementById('t-ciclo-wrap').classList.toggle('hidden',tipo!=='QT');
+  const esQT=tipo==='QT';
+  const esInmu=tipo==='Inmunoterapia';
+  const esBenigno=tipo==='Benigno';
+  document.getElementById('t-esquema-wrap').classList.toggle('hidden',esBenigno||tipo==='Paliativo'||esInmu);
+  document.getElementById('t-inmu-wrap').classList.toggle('hidden',!esInmu);
+  document.getElementById('t-benigno-wrap').classList.toggle('hidden',!esBenigno);
+  document.getElementById('t-otro-wrap').classList.toggle('hidden',!esBenigno);
+  document.getElementById('t-ciclo-wrap').classList.toggle('hidden',!esQT);
+  // Limpiar valores de campos ocultos para evitar enviar datos incorrectos
+  if(!esQT){document.getElementById('t-esquema').value='';document.getElementById('t-ciclo').value='';}
+  if(!esInmu)document.getElementById('t-inmunoterapia').value='';
+  if(!esBenigno){document.getElementById('t-benigno').value='';document.getElementById('t-otro-benigno').value='';}
 }
 function toggleRecaida(){
   const tipo=document.getElementById('e-tipo').value;
