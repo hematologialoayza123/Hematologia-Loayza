@@ -246,10 +246,9 @@ label span.req{color:var(--accent)}
       <div class="form-group" id="dx-principal-wrap"><label>Dx principal maligno</label><select id="dx-principal" onchange="updateDxEspecifico('dx')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div>
       <div class="form-group"><label>Diagnóstico específico</label><select id="dx-especifico"><option value="">Seleccionar categoría primero</option></select></div>
       <div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="dx-otro" placeholder="Especificar si aplica"></div>
-      <div class="form-group"><label>Estratificación de riesgo</label><select id="dx-riesgo"><option value="">Seleccionar</option><option>No aplica</option><option>Bajo</option><option>Intermedio/bajo</option><option>Intermedio</option><option>Alto</option><option>Muy Alto</option><option>Desconocido o no evaluado</option></select></div>
+      <div class="form-group"><label>Estratificación de riesgo</label><select id="dx-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div>
       <div class="form-group"><label>Estado de la enfermedad</label><select id="dx-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div>
     </div>
-
     <div class="section-divider">Evaluación basal al diagnóstico</div>
     <div class="form-grid cols4">
       <div class="form-group"><label>ECOG basal</label><select id="dx-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
@@ -412,7 +411,58 @@ const URL='https://uuqpuujjlhkpyisrtvvz.supabase.co';
 const KEY='sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
 const ANTECEDENTES=['Alcohol','Autoinmunidad','Cardiopatía','DM2','EPOC','ERC','Hepatopatía','Hipertiroidismo','Hipotiroidismo','HTA','Neoplasia previa','Quimioterapia previa','Radioterapia previa','Tabaquismo','Trasplante previo','TVP/TEP','VIH'];
 const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica'];
-const DX_MAP={'Maligno':{'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],'Mieloproliferativa Crónica':['LMC','Síndrome mielodisplásico','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],'Insuficiencia Medular':['Aplasia medular','Hemoglobinuria paroxística nocturna'],'Mieloma':['Mieloma múltiple','MGUS','Plasmocitoma','Macroglobulinemia de Waldenström','Amiloidosis AL'],'Linfoma':['LNH','LH'],'Otros':['Otra']},'Benigno':{'Todos':['Anemia ferropénica','Anemia megaloblástica','AHAI','SD EVANS','PTI','Anemia secundaria/enfermedad crónica','Hemoglobinopatias','Anemia hemolítica hereditaria','Coagulopatia','SAF','Trombofilia Primaria','PTT','SD Hemofagocitico','Otra']}};
+const DX_MAP={
+  'Maligno':{
+    'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],
+    'Mieloproliferativa Crónica':['LMC','Síndrome mielodisplásico','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],
+    'Insuficiencia Medular':['Aplasia medular','Hemoglobinuria paroxística nocturna'],
+    'Mieloma':['Mieloma múltiple','Mieloma indolente','MGUS','Plasmocitoma'],
+    'Linfoma':['LNH','LH','Macroglobulinemia de Waldenström'],
+    'Otros':['Amiloidosis AL','Otra']
+  },
+  'Benigno':{
+    'Todos':['Anemia ferropénica','Anemia megaloblástica','AHAI','SD EVANS','PTI','Anemia secundaria/enfermedad crónica','Hemoglobinopatias','Anemia hemolítica hereditaria','Coagulopatia','SAF','Trombofilia Primaria','PTT','SD Hemofagocitico','Otra']
+  }
+};
+
+// Estratificación de riesgo por diagnóstico específico
+const ESTRATIFICACION_MAP={
+  'LMA':['ELN 2022 - Favorable','ELN 2022 - Intermedio','ELN 2022 - Adverso','No evaluado'],
+  'LPA':['Bajo riesgo (leucocitos <10k)','Alto riesgo (leucocitos ≥10k)','No evaluado'],
+  'LLA-B':['Estándar','Alto riesgo','Muy alto riesgo','Filadelfia positivo','No evaluado'],
+  'LLA-T':['Estándar','Alto riesgo','Muy alto riesgo','No evaluado'],
+  'LLC':['Binet A','Binet B','Binet C','Rai 0','Rai I','Rai II','Rai III','Rai IV','No evaluado'],
+  'LMC':['Sokal - Bajo','Sokal - Intermedio','Sokal - Alto','ELTS - Bajo','ELTS - Intermedio','ELTS - Alto','No evaluado'],
+  'Síndrome mielodisplásico':['IPSS-R - Muy bajo','IPSS-R - Bajo','IPSS-R - Intermedio','IPSS-R - Alto','IPSS-R - Muy alto','No evaluado'],
+  'Policitemia vera':['Bajo riesgo','Alto riesgo','No evaluado'],
+  'Trombocitemia esencial':['Bajo riesgo','Intermedio','Alto riesgo','No evaluado'],
+  'Mielofibrosis primaria':['DIPSS-Plus - Bajo','DIPSS-Plus - Int-1','DIPSS-Plus - Int-2','DIPSS-Plus - Alto','No evaluado'],
+  'Neoplasia mieloproliferativa no especificada':['Bajo riesgo','Alto riesgo','No evaluado'],
+  'Aplasia medular':['No grave','Grave','Muy grave','No evaluado'],
+  'Hemoglobinuria paroxística nocturna':['Sin indicación de tratamiento','Con indicación de tratamiento','No evaluado'],
+  'Mieloma múltiple':['ISS I','ISS II','ISS III','R-ISS I','R-ISS II','R-ISS III','No evaluado'],
+  'Mieloma indolente':['IMWG 2/20/20 - Bajo','IMWG 2/20/20 - Intermedio','IMWG 2/20/20 - Alto','No evaluado'],
+  'MGUS':['Mayo - Bajo','Mayo - Bajo-intermedio','Mayo - Intermedio-alto','Mayo - Alto','No evaluado'],
+  'Plasmocitoma':['Solitario','Múltiple','No evaluado'],
+  'LNH':['IPI - Bajo (0-1)','IPI - Bajo-intermedio (2)','IPI - Intermedio-alto (3)','IPI - Alto (4-5)','FLIPI - Bajo','FLIPI - Intermedio','FLIPI - Alto','No evaluado'],
+  'LH':['IPS 0-3 puntos (favorable)','IPS 4-7 puntos (desfavorable)','No evaluado'],
+  'Macroglobulinemia de Waldenström':['IPSSWM - Bajo','IPSSWM - Intermedio','IPSSWM - Alto','No evaluado'],
+  'Amiloidosis AL':['Mayo 2004 - I','Mayo 2004 - II','Mayo 2004 - III','Mayo 2004 - IV','No evaluado'],
+  'default':['Bajo','Intermedio','Alto','No aplica','No evaluado']
+};
+
+function getEstrategificacion(dxEspecifico){
+  return ESTRATIFICACION_MAP[dxEspecifico]||ESTRATIFICACION_MAP['default'];
+}
+
+function actualizarOpcionesEstrategificacion(prefix){
+  const dxEsp=document.getElementById(prefix+'-especifico')?.value;
+  const sel=document.getElementById(prefix+'-riesgo');
+  if(!sel)return;
+  const valActual=sel.value;
+  const opciones=getEstrategificacion(dxEsp);
+  sel.innerHTML='<option value="">Seleccionar</option>'+opciones.map(o=>`<option${valActual===o?' selected':''}>${o}</option>`).join('');
+}
 let allPacientes=[],currentPacId=null,currentPacData=null;
 
 const RESPUESTAS={
@@ -426,10 +476,13 @@ const RESPUESTAS={
 
 const DX_RESPUESTA_MAP={
   'LMA':'leucemia_aguda','LPA':'leucemia_aguda','LLA-B':'leucemia_aguda','LLA-T':'leucemia_aguda','LLC':'leucemia_aguda',
-  'LMC':'mieloproliferativa','Síndrome mielodisplásico':'smd_insuf','Policitemia vera':'mieloproliferativa','Trombocitemia esencial':'mieloproliferativa','Mielofibrosis primaria':'mieloproliferativa','Neoplasia mieloproliferativa no especificada':'mieloproliferativa',
+  'LMC':'mieloproliferativa','Síndrome mielodisplásico':'smd_insuf',
+  'Policitemia vera':'mieloproliferativa','Trombocitemia esencial':'mieloproliferativa',
+  'Mielofibrosis primaria':'mieloproliferativa','Neoplasia mieloproliferativa no especificada':'mieloproliferativa',
   'Aplasia medular':'smd_insuf','Hemoglobinuria paroxística nocturna':'smd_insuf',
-  'Mieloma múltiple':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma','Macroglobulinemia de Waldenström':'mieloma','Amiloidosis AL':'mieloma',
-  'LNH':'linfoma','LH':'linfoma'
+  'Mieloma múltiple':'mieloma','Mieloma indolente':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma',
+  'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenström':'linfoma',
+  'Amiloidosis AL':'general'
 };
 
 function actualizarOpcionesRespuesta(dxEspecifico){
@@ -458,7 +511,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   ANTECEDENTES.forEach(a=>age.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${a}" name="ant-edit"> ${a}</label>`);
   const pg=document.getElementById('pruebas-grid-dx');
   PRUEBAS.forEach(p=>pg.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-dx"> ${p}</label>`);
-  document.getElementById('dx-inicial-form').innerHTML=`<div class="form-grid"><div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div><div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div><div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div><div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div><div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro"></div><div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar</option><option>No aplica</option><option>Bajo</option><option>Intermedio/bajo</option><option>Intermedio</option><option>Alto</option><option>Muy Alto</option><option>Desconocido o no evaluado</option></select></div><div class="form-group"><label>Estado de la enfermedad</label><select id="d-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div></div>
+  document.getElementById('dx-inicial-form').innerHTML=`<div class="form-grid"><div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div><div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div><div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div><div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div><div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro"></div><div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div><div class="form-group"><label>Estado de la enfermedad</label><select id="d-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div></div>
   <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Evaluación basal al diagnóstico</div>
   <div class="form-grid cols4"><div class="form-group"><label>ECOG basal</label><select id="d-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div class="form-group"><label>Charlson basal</label><input type="number" id="d-charlson-basal" min="0" max="37" placeholder="0-37"></div><div class="form-group"><label>Peso basal (kg)</label><input type="number" id="d-peso-basal" step="0.1" placeholder="Ej: 68.5"></div><div class="form-group"><label>Talla (cm)</label><input type="number" id="d-talla" step="0.1" placeholder="Ej: 165.0"></div></div>
   <div class="form-group" style="margin-top:10px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid-p"></div></div>`;
@@ -651,10 +704,24 @@ async function loadTratPaciente(){
   try{const ts=await api('GET','tratamiento',null,`?paciente_id=eq.${pacId}&select=id,tipo_tratamiento,esquema_qt,numero_ciclo`);document.getElementById('e-tratamiento').innerHTML='<option value="">Sin tratamiento relacionado</option>'+ts.map(t=>`<option value="${t.id}">${t.tipo_tratamiento==='QT'?(t.esquema_qt||'QT')+' C'+(t.numero_ciclo||'?'):t.tipo_tratamiento}</option>`).join('');}catch(e){}
 }
 function updateDxEspecifico(prefix){
-  const cat=document.getElementById(prefix+'-categoria').value;const prin=document.getElementById(prefix+'-principal')?.value;const sel=document.getElementById(prefix+'-especifico');const wrap=document.getElementById(prefix+'-principal-wrap');
-  if(cat==='Benigno'){if(wrap)wrap.style.display='none';sel.innerHTML='<option value="">Seleccionar</option>'+DX_MAP.Benigno.Todos.map(o=>`<option>${o}</option>`).join('');}
-  else if(cat==='Maligno'){if(wrap)wrap.style.display='flex';const opts=prin&&DX_MAP.Maligno[prin]?DX_MAP.Maligno[prin]:Object.values(DX_MAP.Maligno).flat();sel.innerHTML='<option value="">Seleccionar</option>'+opts.map(o=>`<option>${o}</option>`).join('');}
-  else{if(wrap)wrap.style.display='flex';sel.innerHTML='<option value="">Seleccionar categoría primero</option>';}
+  const cat=document.getElementById(prefix+'-categoria').value;
+  const prin=document.getElementById(prefix+'-principal')?.value;
+  const sel=document.getElementById(prefix+'-especifico');
+  const wrap=document.getElementById(prefix+'-principal-wrap');
+  if(cat==='Benigno'){
+    if(wrap)wrap.style.display='none';
+    sel.innerHTML='<option value="">Seleccionar</option>'+DX_MAP.Benigno.Todos.map(o=>`<option>${o}</option>`).join('');
+  } else if(cat==='Maligno'){
+    if(wrap)wrap.style.display='flex';
+    const opts=prin&&DX_MAP.Maligno[prin]?DX_MAP.Maligno[prin]:Object.values(DX_MAP.Maligno).flat();
+    sel.innerHTML='<option value="">Seleccionar</option>'+opts.map(o=>`<option>${o}</option>`).join('');
+  } else {
+    if(wrap)wrap.style.display='flex';
+    sel.innerHTML='<option value="">Seleccionar categoría primero</option>';
+  }
+  actualizarOpcionesEstrategificacion(prefix);
+  // Actualizar cuando cambia el específico también
+  sel.onchange=()=>actualizarOpcionesEstrategificacion(prefix);
 }
 function toggleTratFields(){
   const tipo=document.getElementById('t-tipo').value;
@@ -787,6 +854,8 @@ async function editarRegistro(tipo, id){
           setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
         svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
         sv('dx-estado',r.estado_enfermedad);sv('dx-ecog-basal',r.ecog_basal);
+        // Update estratificacion options based on loaded dx
+        setTimeout(()=>{actualizarOpcionesEstrategificacion('dx');sv('dx-riesgo',r.estratificacion_riesgo);},150);
         svi('dx-charlson-basal',r.charlson_basal);svn('dx-peso-basal',r.peso_basal);
         svn('dx-talla',r.talla_cm);
         if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
