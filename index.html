@@ -297,6 +297,10 @@ label span.req{color:var(--accent)}
 
     <div class="section-divider">Prueba confirmatoria</div>
     <div class="checkbox-grid" id="pruebas-grid-dx"></div>
+    <div class="form-group hidden" id="dx-otra-prueba-wrap" style="margin-top:8px">
+      <label>Especificar otra prueba</label>
+      <input type="text" id="dx-otra-prueba" placeholder="Describir prueba confirmatoria">
+    </div>
   </div>
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalDiagnostico')">Cancelar</button><button class="btn btn-primary" onclick="guardarDiagnostico()">Guardar diagnóstico</button></div>
 </div></div>
@@ -433,7 +437,7 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="pr-paciente" onchange="loadDxPaciente('pr')"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="pr-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="pr-fecha"></div>
-      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo"><option value="">Seleccionar</option><option>Biopsia de médula ósea</option><option>Aspirado de médula ósea</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Colocación de CVC</option><option>Colocación de PICC</option><option>Plasmaféresis</option><option>Leucoaféresis</option><option>Biopsia ganglionar</option><option>Biopsia de otro tejido</option><option>Administración de QT intratecal</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo"><option value="">Seleccionar</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Administración de QT intratecal</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Plasmaféresis</option><option>Otro</option></select></div>
       <div class="form-group"><label>Operador</label><select id="pr-medico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Descripción / Técnica</label><input type="text" id="pr-descripcion" placeholder="Descripción breve"></div>
       <div class="form-group span2"><label>Hallazgos</label><textarea id="pr-hallazgos" placeholder="Hallazgos del procedimiento..."></textarea></div>
@@ -564,7 +568,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   const age=document.getElementById('antecedentes-grid-editar');
   ANTECEDENTES.forEach(a=>age.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${a}" name="ant-edit"> ${a}</label>`);
   const pg=document.getElementById('pruebas-grid-dx');
-  PRUEBAS.forEach(p=>pg.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-dx"> ${p}</label>`);
+  PRUEBAS.forEach(p=>{
+    const onch=p==='Otro'?'onchange="toggleOtraPrueba(\'dx\')"':'';
+    pg.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-dx" ${onch}> ${p}</label>`;
+  });
   document.getElementById('dx-inicial-form').innerHTML=`<div class="form-grid"><div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div><div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div><div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div><div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div><div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro"></div><div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div></div>
   <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Estado de la enfermedad</div>
   <div class="form-grid">
@@ -573,9 +580,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Evaluación basal al diagnóstico</div>
   <div class="form-grid cols4"><div class="form-group"><label>ECOG basal</label><select id="d-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div class="form-group"><label>Charlson basal</label><input type="number" id="d-charlson-basal" min="0" max="37" placeholder="0-37"></div><div class="form-group"><label>Peso basal (kg)</label><input type="number" id="d-peso-basal" step="0.1" placeholder="Ej: 68.5"></div><div class="form-group"><label>Talla (cm)</label><input type="number" id="d-talla" step="0.1" placeholder="Ej: 165.0"></div></div>
-  <div class="form-group" style="margin-top:10px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid-p"></div></div>`;
+  <div class="form-group" style="margin-top:10px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid-p"></div><div class="form-group hidden" id="p-otra-prueba-wrap" style="margin-top:8px"><label>Especificar otra prueba</label><input type="text" id="p-otra-prueba" placeholder="Describir prueba confirmatoria"></div></div>`;
   const pgp=document.getElementById('pruebas-grid-p');
-  PRUEBAS.forEach(p=>pgp.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-p"> ${p}</label>`);
+  PRUEBAS.forEach(p=>{
+    const onch=p==='Otro'?'onchange="toggleOtraPrueba(\'p\')"':'';
+    pgp.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-p" ${onch}> ${p}</label>`;
+  });
   loadDashboard();loadPacientes();loadMedicos();
 });
 
@@ -783,6 +793,11 @@ function updateDxEspecifico(prefix){
   // Actualizar cuando cambia el específico también
   sel.onchange=()=>actualizarOpcionesEstrategificacion(prefix);
 }
+function toggleOtraPrueba(prefix){
+  const checked=document.querySelector(`input[name="prueba-${prefix}"][value="Otro"]`)?.checked;
+  const wrap=document.getElementById(prefix+'-otra-prueba-wrap')||document.getElementById(prefix==='p'?'p-otra-prueba-wrap':'dx-otra-prueba-wrap');
+  if(wrap)wrap.classList.toggle('hidden',!checked);
+}
 function toggleTratFields(){
   const tipo=document.getElementById('t-tipo').value;
   const esQT=tipo==='QT';
@@ -818,7 +833,7 @@ async function guardarPaciente(){
     const res=await api('POST','paciente',{hc,nombre,sexo:v('p-sexo'),fecha_nacimiento:v('p-fnac'),fecha_ingreso_hematologia:v('p-fingreso'),seguro:v('p-seguro'),estado_vital:v('p-estado-vital')||'Vivo',antecedentes:getChecked('ant')||null,otro_antecedente:document.getElementById('p-otro-ant').value.trim()||null});
     const pac=Array.isArray(res)?res[0]:res;
     const dxEsp=v('d-especifico'),dxFecha=v('d-fecha');
-    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:getChecked('prueba-p')||null,ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla')});
+    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla')});
     showAlert('alert-paciente','success','✓ Paciente registrado.');
     setTimeout(()=>{closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
   }catch(e){showAlert('alert-paciente','error','Error: '+e.message);}
@@ -836,7 +851,7 @@ async function guardarDiagnostico(){
       estratificacion_riesgo:v('dx-riesgo'),
       estado_debut:v('dx-estado-debut'),
       estado_actual:v('dx-estado-actual'),
-      prueba_confirmatoria:getChecked('prueba-dx')||null,
+      prueba_confirmatoria:(()=>{let p=getChecked('prueba-dx');const otro=document.getElementById('dx-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),
       ecog_basal:v('dx-ecog-basal'),
       charlson_basal:vni('dx-charlson-basal'),
       peso_basal:vn('dx-peso-basal'),
