@@ -451,40 +451,56 @@ const ANTECEDENTES=['Alcohol','Autoinmunidad','Cardiopatía','DM2','EPOC','ERC',
 const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica'];
 const DX_MAP={
   'Maligno':{
-    'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T','LLC'],
-    'Mieloproliferativa Crónica':['LMC','Síndrome mielodisplásico','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],
-    'Insuficiencia Medular':['Aplasia medular','Hemoglobinuria paroxística nocturna'],
-    'Mieloma':['Mieloma múltiple','Mieloma indolente','MGUS','Plasmocitoma'],
-    'Linfoma':['LNH','LH','Macroglobulinemia de Waldenström'],
+    'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T'],
+    'Mieloproliferativa Crónica':['LMC','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],
+    'Insuficiencia Medular':['Sindrome mielodisplasico','Aplasia medular','Hemoglobinuria paroxistica nocturna'],
+    'Mieloma':['Mieloma multiple','Mieloma indolente','MGUS','Plasmocitoma'],
+    'Linfoma':['LLC','LNH','LH','Macroglobulinemia de Waldenstrom'],
     'Otros':['Amiloidosis AL','Otra']
   },
   'Benigno':{
-    'Todos':['Anemia ferropénica','Anemia megaloblástica','AHAI','SD EVANS','PTI','Anemia secundaria/enfermedad crónica','Hemoglobinopatias','Anemia hemolítica hereditaria','Coagulopatia','SAF','Trombofilia Primaria','PTT','SD Hemofagocitico','Otra']
+    'Todos':[
+      'Anemia ferropenica','Anemia megaloblastica','Anemia por deficit de B9',
+      'Anemia secundaria/enfermedad cronica','AHAI','SD EVANS','PTI',
+      'Talasemia','Anemia falciforme','Esferocitosis hereditaria',
+      'Hemofilia','Enfermedad de Von Willebrand',
+      'Coagulopatia','SAF','Trombofilia Primaria','Anticoagulado',
+      'PTT','SD Hemofagocitico',
+      'Enfermedad de Gaucher','Otras Histiocitosis','Otra'
+    ]
   }
 };
 
-// Estratificación de riesgo por diagnóstico específico
 const ESTRATIFICACION_MAP={
   'LMA':['ELN 2022 - Favorable','ELN 2022 - Intermedio','ELN 2022 - Adverso','No evaluado'],
-  'LPA':['Bajo riesgo (leucocitos <10k)','Alto riesgo (leucocitos ≥10k)','No evaluado'],
-  'LLA-B':['Estándar','Alto riesgo','Muy alto riesgo','Filadelfia positivo','No evaluado'],
-  'LLA-T':['Estándar','Alto riesgo','Muy alto riesgo','No evaluado'],
+  'LPA':['Bajo riesgo (leucocitos <10k)','Alto riesgo (leucocitos >=10k)','No evaluado'],
+  'LLA-B':['Estandar','Alto riesgo','Muy alto riesgo','Filadelfia positivo','No evaluado'],
+  'LLA-T':['Estandar','Alto riesgo','Muy alto riesgo','No evaluado'],
   'LLC':['Binet A','Binet B','Binet C','Rai 0','Rai I','Rai II','Rai III','Rai IV','No evaluado'],
   'LMC':['Sokal - Bajo','Sokal - Intermedio','Sokal - Alto','ELTS - Bajo','ELTS - Intermedio','ELTS - Alto','No evaluado'],
-  'Síndrome mielodisplásico':['IPSS-R - Muy bajo','IPSS-R - Bajo','IPSS-R - Intermedio','IPSS-R - Alto','IPSS-R - Muy alto','No evaluado'],
+  'Sindrome mielodisplasico':['IPSS-R - Muy bajo','IPSS-R - Bajo','IPSS-R - Intermedio','IPSS-R - Alto','IPSS-R - Muy alto','No evaluado'],
   'Policitemia vera':['Bajo riesgo','Alto riesgo','No evaluado'],
   'Trombocitemia esencial':['Bajo riesgo','Intermedio','Alto riesgo','No evaluado'],
   'Mielofibrosis primaria':['DIPSS-Plus - Bajo','DIPSS-Plus - Int-1','DIPSS-Plus - Int-2','DIPSS-Plus - Alto','No evaluado'],
   'Neoplasia mieloproliferativa no especificada':['Bajo riesgo','Alto riesgo','No evaluado'],
   'Aplasia medular':['No grave','Grave','Muy grave','No evaluado'],
-  'Hemoglobinuria paroxística nocturna':['Sin indicación de tratamiento','Con indicación de tratamiento','No evaluado'],
-  'Mieloma múltiple':['ISS I','ISS II','ISS III','R-ISS I','R-ISS II','R-ISS III','No evaluado'],
+  'Hemoglobinuria paroxistica nocturna':['Sin indicacion de tratamiento','Con indicacion de tratamiento','No evaluado'],
+  'Mieloma multiple':['ISS I','ISS II','ISS III','R-ISS I','R-ISS II','R-ISS III','No evaluado'],
   'Mieloma indolente':['IMWG 2/20/20 - Bajo','IMWG 2/20/20 - Intermedio','IMWG 2/20/20 - Alto','No evaluado'],
   'MGUS':['Mayo - Bajo','Mayo - Bajo-intermedio','Mayo - Intermedio-alto','Mayo - Alto','No evaluado'],
-  'Plasmocitoma':['Solitario','Múltiple','No evaluado'],
-  'LNH':['IPI - Bajo (0-1)','IPI - Bajo-intermedio (2)','IPI - Intermedio-alto (3)','IPI - Alto (4-5)','FLIPI - Bajo','FLIPI - Intermedio','FLIPI - Alto','No evaluado'],
-  'LH':['IPS 0-3 puntos (favorable)','IPS 4-7 puntos (desfavorable)','No evaluado'],
-  'Macroglobulinemia de Waldenström':['IPSSWM - Bajo','IPSSWM - Intermedio','IPSSWM - Alto','No evaluado'],
+  'Plasmocitoma':['Solitario','Multiple','No evaluado'],
+  'LNH':[
+    'Ann Arbor I','Ann Arbor II','Ann Arbor III','Ann Arbor IV',
+    'IPI - Bajo (0-1)','IPI - Bajo-intermedio (2)','IPI - Intermedio-alto (3)','IPI - Alto (4-5)',
+    'FLIPI - Bajo','FLIPI - Intermedio','FLIPI - Alto',
+    'No evaluado'
+  ],
+  'LH':[
+    'Ann Arbor I','Ann Arbor II','Ann Arbor III','Ann Arbor IV',
+    'IPS 0-3 puntos (favorable)','IPS 4-7 puntos (desfavorable)',
+    'No evaluado'
+  ],
+  'Macroglobulinemia de Waldenstrom':['IPSSWM - Bajo','IPSSWM - Intermedio','IPSSWM - Alto','No evaluado'],
   'Amiloidosis AL':['Mayo 2004 - I','Mayo 2004 - II','Mayo 2004 - III','Mayo 2004 - IV','No evaluado'],
   'default':['Bajo','Intermedio','Alto','No aplica','No evaluado']
 };
@@ -514,12 +530,12 @@ const RESPUESTAS={
 
 const DX_RESPUESTA_MAP={
   'LMA':'leucemia_aguda','LPA':'leucemia_aguda','LLA-B':'leucemia_aguda','LLA-T':'leucemia_aguda','LLC':'leucemia_aguda',
-  'LMC':'mieloproliferativa','Síndrome mielodisplásico':'smd_insuf',
+  'LMC':'mieloproliferativa','Sindrome mielodisplasico':'smd_insuf',
   'Policitemia vera':'mieloproliferativa','Trombocitemia esencial':'mieloproliferativa',
   'Mielofibrosis primaria':'mieloproliferativa','Neoplasia mieloproliferativa no especificada':'mieloproliferativa',
-  'Aplasia medular':'smd_insuf','Hemoglobinuria paroxística nocturna':'smd_insuf',
-  'Mieloma múltiple':'mieloma','Mieloma indolente':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma',
-  'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenström':'linfoma',
+  'Aplasia medular':'smd_insuf','Hemoglobinuria paroxistica nocturna':'smd_insuf',
+  'Mieloma multiple':'mieloma','Mieloma indolente':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma',
+  'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenstrom':'linfoma',
   'Amiloidosis AL':'general'
 };
 
