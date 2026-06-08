@@ -247,8 +247,46 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Diagnóstico específico</label><select id="dx-especifico"><option value="">Seleccionar categoría primero</option></select></div>
       <div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="dx-otro" placeholder="Especificar si aplica"></div>
       <div class="form-group"><label>Estratificación de riesgo</label><select id="dx-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div>
-      <div class="form-group"><label>Estado de la enfermedad</label><select id="dx-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div>
     </div>
+
+    <div class="section-divider">Estado de la enfermedad</div>
+    <div class="form-grid">
+      <div class="form-group span2">
+        <label>Estado al primer contacto <span style="color:var(--text3);font-weight:400">(se registra una sola vez)</span></label>
+        <select id="dx-estado-debut">
+          <option value="">Seleccionar</option>
+          <option>Debut — diagnóstico nuevo</option>
+          <option>Previamente tratado — RC</option>
+          <option>Previamente tratado — RP</option>
+          <option>Previamente tratado — en tratamiento activo</option>
+          <option>Previamente tratado — en recaída</option>
+          <option>Previamente tratado — en progresión</option>
+          <option>Previamente tratado — enfermedad estable</option>
+          <option>Referido — en observación</option>
+          <option>Referido — en cuidados paliativos</option>
+          <option>Desconocido</option>
+        </select>
+      </div>
+      <div class="form-group span2">
+        <label>Estado actual <span style="color:var(--text3);font-weight:400">(actualizar en cada control)</span></label>
+        <select id="dx-estado-actual">
+          <option value="">Seleccionar</option>
+          <option>Debut</option>
+          <option>En tratamiento</option>
+          <option>RC</option>
+          <option>RP</option>
+          <option>Mantenimiento</option>
+          <option>Observación</option>
+          <option>Enfermedad estable</option>
+          <option>Recaída</option>
+          <option>Progresión</option>
+          <option>Refractario</option>
+          <option>Cuidados paliativos</option>
+          <option>Pérdida de seguimiento</option>
+        </select>
+      </div>
+    </div>
+
     <div class="section-divider">Evaluación basal al diagnóstico</div>
     <div class="form-grid cols4">
       <div class="form-group"><label>ECOG basal</label><select id="dx-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
@@ -511,7 +549,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   ANTECEDENTES.forEach(a=>age.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${a}" name="ant-edit"> ${a}</label>`);
   const pg=document.getElementById('pruebas-grid-dx');
   PRUEBAS.forEach(p=>pg.innerHTML+=`<label class="checkbox-item"><input type="checkbox" value="${p}" name="prueba-dx"> ${p}</label>`);
-  document.getElementById('dx-inicial-form').innerHTML=`<div class="form-grid"><div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div><div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div><div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div><div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div><div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro"></div><div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div><div class="form-group"><label>Estado de la enfermedad</label><select id="d-estado"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Cuidados Paliativos</option><option>Enfermedad Estable</option><option>Observación</option><option>Progresión</option><option>Recaída</option><option>Refractario</option></select></div></div>
+  document.getElementById('dx-inicial-form').innerHTML=`<div class="form-grid"><div class="form-group"><label>Fecha de debut</label><input type="date" id="d-fecha"></div><div class="form-group"><label>Categoría</label><select id="d-categoria" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Maligno</option><option>Benigno</option></select></div><div class="form-group" id="d-principal-wrap"><label>Dx principal maligno</label><select id="d-principal" onchange="updateDxEspecifico('d')"><option value="">Seleccionar</option><option>Leucemia Aguda</option><option>Mieloproliferativa Crónica</option><option>Insuficiencia Medular</option><option>Mieloma</option><option>Linfoma</option><option>Otros</option></select></div><div class="form-group"><label>Diagnóstico específico</label><select id="d-especifico"><option value="">Seleccionar categoría primero</option></select></div><div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="d-otro"></div><div class="form-group"><label>Estratificación de riesgo</label><select id="d-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div></div>
+  <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Estado de la enfermedad</div>
+  <div class="form-grid">
+    <div class="form-group span2"><label>Estado al primer contacto <span style="color:var(--text3);font-weight:400">(se registra una sola vez)</span></label><select id="d-estado-debut"><option value="">Seleccionar</option><option>Debut — diagnóstico nuevo</option><option>Previamente tratado — RC</option><option>Previamente tratado — RP</option><option>Previamente tratado — en tratamiento activo</option><option>Previamente tratado — en recaída</option><option>Previamente tratado — en progresión</option><option>Previamente tratado — enfermedad estable</option><option>Referido — en observación</option><option>Referido — en cuidados paliativos</option><option>Desconocido</option></select></div>
+    <div class="form-group span2"><label>Estado actual <span style="color:var(--text3);font-weight:400">(actualizar en cada control)</span></label><select id="d-estado-actual"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Mantenimiento</option><option>Observación</option><option>Enfermedad estable</option><option>Recaída</option><option>Progresión</option><option>Refractario</option><option>Cuidados paliativos</option><option>Pérdida de seguimiento</option></select></div>
+  </div>
   <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Evaluación basal al diagnóstico</div>
   <div class="form-grid cols4"><div class="form-group"><label>ECOG basal</label><select id="d-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div class="form-group"><label>Charlson basal</label><input type="number" id="d-charlson-basal" min="0" max="37" placeholder="0-37"></div><div class="form-group"><label>Peso basal (kg)</label><input type="number" id="d-peso-basal" step="0.1" placeholder="Ej: 68.5"></div><div class="form-group"><label>Talla (cm)</label><input type="number" id="d-talla" step="0.1" placeholder="Ej: 165.0"></div></div>
   <div class="form-group" style="margin-top:10px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid-p"></div></div>`;
@@ -640,6 +683,7 @@ async function verPaciente(pacId){
             ${estadoBadge(p.estado_vital)}
             ${p.fecha_fallecimiento?`<span class="badge badge-gray">† ${ff(p.fecha_fallecimiento)}${p.causa_fallecimiento?' · '+p.causa_fallecimiento:''}</span>`:''}
             ${dxs.map(d=>d.diagnostico_especifico?`<span class="badge badge-purple">${d.diagnostico_especifico}</span>`:'').join('')}
+            ${dxs[0]?.estado_actual?`<span class="badge badge-blue">${dxs[0].estado_actual}</span>`:''}
           </div>
         </div>
         <div style="text-align:right;font-size:12px;color:var(--text2)">Ingreso: ${ff(p.fecha_ingreso_hematologia)}<br><span style="color:var(--text3)">${dxs.length} dx · ${ats.length} aten. · ${trts.length} trat. · ${evs.length} eventos · ${labs.length} labs · ${procs.length} proc.</span></div>
@@ -647,7 +691,7 @@ async function verPaciente(pacId){
 
       ${p.antecedentes?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Antecedentes</span></div><div class="card-body" style="padding:12px 16px"><div style="display:flex;flex-wrap:wrap;gap:6px">${p.antecedentes.split(',').filter(a=>a.trim()).map(a=>`<span class="badge badge-amber">${a.trim()}</span>`).join('')}</div>${p.otro_antecedente?`<div style="margin-top:8px;font-size:13px;color:var(--text2)">Otro: ${p.otro_antecedente}</div>`:''}</div></div>`:''}
 
-      ${dxs.length?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Diagnósticos (${dxs.length})</span><button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div><div class="table-wrap"><table><thead><tr><th>Fecha debut</th><th>Diagnóstico</th><th>Categoría</th><th>Riesgo</th><th>Estado</th><th>ECOG b.</th><th>Charlson b.</th><th>Peso/Talla</th></tr></thead><tbody>${dxs.map(d=>`<tr><td style="font-family:var(--mono);font-size:12px">${ff(d.fecha_debut)}</td><td><strong>${d.diagnostico_especifico||d.otro_diagnostico||'—'}</strong></td><td>${d.categoria?`<span class="badge ${d.categoria==='Maligno'?'badge-red':'badge-blue'}">${d.categoria}</span>`:'—'}</td><td>${d.estratificacion_riesgo||'—'}</td><td>${d.estado_enfermedad?`<span class="badge badge-purple">${d.estado_enfermedad}</span>`:'—'}</td><td style="font-family:var(--mono)">${d.ecog_basal??'—'}</td><td style="font-family:var(--mono)">${d.charlson_basal??'—'}</td><td style="font-size:12px;color:var(--text2)">${d.peso_basal?d.peso_basal+'kg':'—'}${d.talla_cm?' / '+d.talla_cm+'cm':''}</td></tr>`).join('')}</tbody></table></div></div>`:
+      ${dxs.length?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Diagnósticos (${dxs.length})</span><button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div><div class="table-wrap"><table><thead><tr><th>Fecha debut</th><th>Diagnóstico</th><th>Categoría</th><th>Riesgo</th><th>Al primer contacto</th><th>Estado actual</th><th>ECOG b.</th><th>Peso/Talla</th></tr></thead><tbody>${dxs.map(d=>`<tr><td style="font-family:var(--mono);font-size:12px">${ff(d.fecha_debut)}</td><td><strong>${d.diagnostico_especifico||d.otro_diagnostico||'—'}</strong></td><td>${d.categoria?`<span class="badge ${d.categoria==='Maligno'?'badge-red':'badge-blue'}">${d.categoria}</span>`:'—'}</td><td style="font-size:12px">${d.estratificacion_riesgo||'—'}</td><td style="font-size:12px;color:var(--text2)">${d.estado_debut||'—'}</td><td>${d.estado_actual?`<span class="badge badge-purple">${d.estado_actual}</span>`:'—'}</td><td style="font-family:var(--mono)">${d.ecog_basal??'—'}</td><td style="font-size:12px;color:var(--text2)">${d.peso_basal?d.peso_basal+'kg':'—'}${d.talla_cm?' / '+d.talla_cm+'cm':''}</td></tr>`).join('')}</tbody></table></div></div>`:
       `<div class="card" style="margin-bottom:14px"><div class="card-body"><div class="empty" style="padding:16px">Sin diagnósticos. <button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div></div></div>`}
 
       <div class="card"><div class="card-header"><span class="card-title">Historia clínica</span><span style="font-size:12px;color:var(--text2)">${tl.length} registros</span></div><div class="card-body">
@@ -751,7 +795,7 @@ async function guardarPaciente(){
     const res=await api('POST','paciente',{hc,nombre,sexo:v('p-sexo'),fecha_nacimiento:v('p-fnac'),fecha_ingreso_hematologia:v('p-fingreso'),seguro:v('p-seguro'),estado_vital:v('p-estado-vital')||'Vivo',antecedentes:getChecked('ant')||null,otro_antecedente:document.getElementById('p-otro-ant').value.trim()||null});
     const pac=Array.isArray(res)?res[0]:res;
     const dxEsp=v('d-especifico'),dxFecha=v('d-fecha');
-    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_enfermedad:v('d-estado'),prueba_confirmatoria:getChecked('prueba-p')||null,ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla')});
+    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:getChecked('prueba-p')||null,ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla')});
     showAlert('alert-paciente','success','✓ Paciente registrado.');
     setTimeout(()=>{closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
   }catch(e){showAlert('alert-paciente','error','Error: '+e.message);}
@@ -767,7 +811,8 @@ async function guardarDiagnostico(){
       diagnostico_especifico:v('dx-especifico'),
       otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,
       estratificacion_riesgo:v('dx-riesgo'),
-      estado_enfermedad:v('dx-estado'),
+      estado_debut:v('dx-estado-debut'),
+      estado_actual:v('dx-estado-actual'),
       prueba_confirmatoria:getChecked('prueba-dx')||null,
       ecog_basal:v('dx-ecog-basal'),
       charlson_basal:vni('dx-charlson-basal'),
@@ -853,14 +898,14 @@ async function editarRegistro(tipo, id){
         setTimeout(()=>{sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
           setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
         svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
-        sv('dx-estado',r.estado_enfermedad);sv('dx-ecog-basal',r.ecog_basal);
-        // Update estratificacion options based on loaded dx
+        sv('dx-estado-debut',r.estado_debut);sv('dx-estado-actual',r.estado_actual);
+        sv('dx-ecog-basal',r.ecog_basal);
         setTimeout(()=>{actualizarOpcionesEstrategificacion('dx');sv('dx-riesgo',r.estratificacion_riesgo);},150);
         svi('dx-charlson-basal',r.charlson_basal);svn('dx-peso-basal',r.peso_basal);
         svn('dx-talla',r.talla_cm);
         if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
         document.querySelector('#modalDiagnostico .modal-title').textContent='Editar diagnóstico';
-        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),estado_enfermedad:v('dx-estado'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla')},'modalDiagnostico','alert-diagnostico');
+        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),estado_debut:v('dx-estado-debut'),estado_actual:v('dx-estado-actual'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla')},'modalDiagnostico','alert-diagnostico');
       },200);
     }
     else if(tipo==='tratamiento'){
