@@ -545,6 +545,21 @@ label span.req{color:var(--accent)}
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalBiomol')">Cancelar</button><button class="btn btn-primary" onclick="guardarBiomol()">Guardar resultado</button></div>
 </div></div>
 
+<!-- MODAL SEGUIMIENTO EVENTO -->
+<div id="modalSeguimientoEvento" class="modal-overlay hidden"><div class="modal" style="max-width:480px">
+  <div class="modal-header"><span class="modal-title">Actualizar estado del evento</span><button class="modal-close" onclick="closeModal('modalSeguimientoEvento')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-seguimiento"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="seg-fecha"></div>
+      <div class="form-group"><label>Nuevo estado <span class="req">*</span></label><select id="seg-estado"><option value="">Seleccionar</option><option>Activo</option><option>Mejora</option><option>Persistente</option><option>Crónico</option><option>Recurrente</option><option>Resuelto</option></select></div>
+      <div class="form-group span2"><label>Nota clínica</label><input type="text" id="seg-nota" placeholder="Ej: Respondió a antibióticos, persiste fiebre..."></div>
+      <div class="form-group"><label>Médico</label><select id="seg-medico"><option value="">Seleccionar</option></select></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalSeguimientoEvento')">Cancelar</button><button class="btn btn-primary" onclick="guardarSeguimientoEvento()">Guardar</button></div>
+</div></div>
+
 <script>
 const URL='https://uuqpuujjlhkpyisrtvvz.supabase.co';
 const KEY='sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
@@ -566,6 +581,7 @@ const DX_MAP={
       'Talasemia','Anemia falciforme','Esferocitosis hereditaria',
       'Hemofilia','Enfermedad de Von Willebrand',
       'Coagulopatia','SAF','Trombofilia Primaria','Anticoagulado',
+      'Aplasia medular','Hemoglobinuria paroxística nocturna',
       'PTT','SD Hemofagocítico',
       'Enfermedad de Gaucher','Otras Histiocitosis','Otra'
     ]
@@ -845,7 +861,7 @@ async function verPaciente(pacId){
   currentPacId=pacId;showSection('detalle');
   document.getElementById('detalle-content').innerHTML='<div class="loading"><div class="spinner"></div> Cargando ficha...</div>';
   try{
-    const [pArr,dxs,ats,trts,evs,labs,procs,tras,biomols,meds]=await Promise.all([
+    const [pArr,dxs,ats,trts,evs,labs,procs,tras,biomols,evseg,meds]=await Promise.all([
       api('GET','paciente',null,`?id=eq.${pacId}&limit=1`),
       api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&order=fecha_debut.desc`),
       api('GET','atencion',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
@@ -855,10 +871,14 @@ async function verPaciente(pacId){
       api('GET','procedimiento',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
       api('GET','trasplante',null,`?paciente_id=eq.${pacId}&order=fecha_dia_0.desc`),
       api('GET','biologia_molecular',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
+      api('GET','evento_seguimiento',null,`?paciente_id=eq.${pacId}&order=fecha.asc`),
       api('GET','medico',null,'?select=id,nombre_completo')
     ]);
     const p=pArr[0]; currentPacData=p;
     const mm=Object.fromEntries(meds.map(m=>[m.id,m.nombre_completo]));
+    // Agrupar seguimientos por evento_id
+    const segMap={};
+    evseg.forEach(s=>{if(!segMap[s.evento_id])segMap[s.evento_id]=[];segMap[s.evento_id].push(s);});
     const tl=[
       ...ats.map(a=>({tipo:'atencion',fecha:a.fecha,d:a,med:mm[a.medico_id]})),
       ...evs.map(e=>({tipo:'evento',fecha:e.fecha_evento,d:e})),
@@ -896,7 +916,16 @@ async function verPaciente(pacId){
           const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento',trasplante:'dot-diagnostico',biomol:'dot-laboratorio'};
           let titulo='',detalle='';
           if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';const extras=[];if(item.d.ecog)extras.push('ECOG '+item.d.ecog);if(item.d.charlson_score!=null)extras.push('Charlson '+item.d.charlson_score);if(item.d.peso_kg)extras.push(item.d.peso_kg+'kg');detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ')+(extras.length?' · '+extras.join(' · '):'');if(item.d.notas)detalle+=(detalle?'<br>':'')+'<em>'+item.d.notas+'</em>';}
-          else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.tipo_recaida?item.d.tipo_recaida:null,item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
+          else if(item.tipo==='evento'){
+            titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;
+            const segs=segMap[item.d.id]||[];
+            const estadoActual=segs.length>0?segs[segs.length-1].estado:item.d.estado;
+            detalle=[item.d.tipo_recaida||null,estadoActual?`<strong>${estadoActual}</strong>`:null,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');
+            if(segs.length>0){
+              detalle+=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Evolución</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${segs.map(s=>`<span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px">${ff(s.fecha)} <strong>${s.estado}</strong>${s.nota?' — '+s.nota:''}</span>`).join('')}</div></div>`;
+            }
+            detalle+=`<div style="margin-top:6px"><button onclick="abrirSeguimientoEvento('${item.d.id}','${currentPacId}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;color:var(--text2)">+ Actualizar estado</button></div>`;
+          }
           else if(item.tipo==='tratamiento'){
             const esq=item.d.esquema_qt||'';
             if(item.d.tipo_tratamiento==='QT')titulo=`${esq||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`;
@@ -922,7 +951,7 @@ async function loadMedicos(){
   try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');['a-medico'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
 }
 async function loadMedicosEnModal(modalId){
-  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico',modalTrasplante:'tr-medico',modalBiomol:'bm-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
+  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico',modalTrasplante:'tr-medico',modalBiomol:'bm-medico',modalSeguimientoEvento:'seg-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
 }
 async function loadPacsEnSelect(){
   try{const ps=await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');const opts='<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');['a-paciente','t-paciente','e-paciente','dx-paciente','l-paciente','pr-paciente','tr-paciente','bm-paciente'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
@@ -1074,6 +1103,34 @@ async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
   try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
 }
+let currentEventoId=null;
+function abrirSeguimientoEvento(eventoId, pacId){
+  currentEventoId=eventoId;
+  document.getElementById('seg-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('seg-estado').value='';
+  document.getElementById('seg-nota').value='';
+  document.getElementById('alert-seguimiento').innerHTML='';
+  loadMedicosEnModal('modalSeguimientoEvento');
+  document.getElementById('modalSeguimientoEvento').classList.remove('hidden');
+}
+
+async function guardarSeguimientoEvento(){
+  if(!currentEventoId)return;
+  const fecha=v('seg-fecha'),estado=v('seg-estado');
+  if(!fecha||!estado)return showAlert('alert-seguimiento','error','Fecha y estado son obligatorios.');
+  try{
+    await api('POST','evento_seguimiento',{
+      evento_id:currentEventoId,
+      paciente_id:currentPacId,
+      fecha,estado,
+      nota:document.getElementById('seg-nota').value.trim()||null,
+      medico_id:v('seg-medico')
+    });
+    showAlert('alert-seguimiento','success','✓ Estado actualizado.');
+    setTimeout(()=>{closeModal('modalSeguimientoEvento');verPaciente(currentPacId);},1200);
+  }catch(e){showAlert('alert-seguimiento','error','Error: '+e.message);}
+}
+
 async function guardarBiomol(){
   const pacId=v('bm-paciente'),gen=v('bm-gen'),resultado=v('bm-resultado'),fecha=v('bm-fecha');
   if(!pacId||!gen||!resultado||!fecha)return showAlert('alert-biomol','error','Paciente, fecha, gen y resultado son obligatorios.');
