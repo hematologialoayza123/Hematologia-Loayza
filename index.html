@@ -550,7 +550,7 @@ const ESQUEMAS_MAP={
   'LLA-B':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Pethema ALL-Ph+','Blinatumomab','Inotuzumab','Otro'],
   'LLA-T':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Otro'],
   'LLC':['FCR','BR','Ibrutinib','Acalabrutinib','Venetoclax + Obinutuzumab','Idelalisib + Rituximab','Clorambucil + Obinutuzumab','Otro'],
-  'LMC':['Imatinib','Dasatinib','Nilotinib','Bosutinib','Ponatinib','Asciminib','Hidroxicarbamida','Otro'],
+  'LMC':['Imatinib','Dasatinib','Nilotinib','Bosutinib','Ponatinib','Asciminib','Hidroxiurea','Otro'],
   'Sindrome mielodisplasico':['Azacitidina mono','Lenalidomida','EPO/ESA','Luspatercept','Soporte transfusional','Otro'],
   'Aplasia medular':['Ciclosporina + ATG equina','Ciclosporina + ATG de conejo','Eltrombopag','Ciclosporina mono','Otro'],
   'Mieloma multiple':['VTD','VRD','DVTd','DVRd','CyBorD','DRC','BDR','KRD','Dara mono','Pomalidomida + Dex','Otro'],
@@ -561,18 +561,41 @@ const ESQUEMAS_MAP={
   'LH':['ABVD','BEACOPP escalado','BV-AVD','BV mono','Nivolumab','Pembrolizumab','Otro'],
   'Macroglobulinemia de Waldenstrom':['BDR','DRC','BR','Ibrutinib','Zanubrutinib','Rituximab mono','Otro'],
   'Amiloidosis AL':['CyBorD','VCD','Dara + CyBorD','Otro'],
-  'Policitemia vera':['Hidroxicarbamida','Ruxolitinib','Flebotomia','Interferon','Otro'],
-  'Trombocitemia esencial':['Hidroxicarbamida','Anagrelida','Interferon','Ruxolitinib','Otro'],
-  'Mielofibrosis primaria':['Ruxolitinib','Fedratinib','Pacritinib','Momelotinib','Hidroxicarbamida','Otro'],
+  'Policitemia vera':['Hidroxiurea','Ruxolitinib','Flebotomia','Interferon','Otro'],
+  'Trombocitemia esencial':['Hidroxiurea','Anagrelida','Interferon','Ruxolitinib','Otro'],
+  'Mielofibrosis primaria':['Ruxolitinib','Fedratinib','Pacritinib','Momelotinib','Hidroxiurea','Otro'],
   'Hemoglobinuria paroxistica nocturna':['Eculizumab','Ravulizumab','Otro'],
+  // Citorreducción — esquemas independientes del diagnóstico
+  '_citorreduccion':['Hidroxiurea','Citarabina dosis bajas (LDAC)','Citarabina dosis altas (HiDAC)','Leucoaféresis','Hidroxiurea + Alopurinol','Otro'],
+  // Mantenimiento — por grupo diagnóstico
+  '_mantenimiento_lma':['Azacitidina','LDAC mono','Aza-Veneto','Otro'],
+  '_mantenimiento_lpa':['ATRA','Metotrexato + 6-Mercaptopurina','Otro'],
+  '_mantenimiento_lla':['Metotrexato + 6-Mercaptopurina','Imatinib','Dasatinib','Otro'],
+  '_mantenimiento_linfoma':['Rituximab','Lenalidomida','Brentuximab','Otro'],
+  '_mantenimiento_mieloma':['Lenalidomida','Bortezomib','Talidomida','Daratumumab','Otro'],
+  '_mantenimiento_general':['Hidroxiurea','Interferon','Otro'],
   'default':['Otro']
 };
 
 function actualizarEsquemas(dxEspecifico){
   const sel=document.getElementById('t-esquema');
   if(!sel)return;
+  const tipo=document.getElementById('t-tipo')?.value||'';
   const valActual=sel.value;
-  const opciones=ESQUEMAS_MAP[dxEspecifico]||ESQUEMAS_MAP['default'];
+  let opciones;
+  if(tipo==='Citorreducción'){
+    opciones=ESQUEMAS_MAP['_citorreduccion'];
+  } else if(tipo==='Mantenimiento'){
+    // Seleccionar mantenimiento según diagnóstico
+    if(['LMA'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lma'];
+    else if(['LPA'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lpa'];
+    else if(['LLA-B','LLA-T'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lla'];
+    else if(['LNH','LH','LLC','Macroglobulinemia de Waldenstrom'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_linfoma'];
+    else if(['Mieloma multiple','Mieloma indolente','MGUS','Plasmocitoma'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_mieloma'];
+    else opciones=ESQUEMAS_MAP['_mantenimiento_general'];
+  } else {
+    opciones=ESQUEMAS_MAP[dxEspecifico]||ESQUEMAS_MAP['default'];
+  }
   sel.innerHTML='<option value="">Seleccionar</option>'+opciones.map(o=>`<option${valActual===o?' selected':''}>${o}</option>`).join('');
 }
 function actualizarOpcionesRespuesta(dxEspecifico){
@@ -855,6 +878,10 @@ function toggleTratFields(){
   if(!esInmu)document.getElementById('t-inmunoterapia').value='';
   if(!esTD)document.getElementById('t-tdirigida').value='';
   if(!esBenigno){document.getElementById('t-benigno').value='';document.getElementById('t-otro-benigno').value='';}
+  // Actualizar esquemas según tipo
+  const dxSel=document.getElementById('t-diagnostico');
+  const dxOpt=dxSel?.options[dxSel?.selectedIndex];
+  actualizarEsquemas(dxOpt?.dataset?.dx||'');
 }
 function toggleRecaida(){
   const tipo=document.getElementById('e-tipo').value;
