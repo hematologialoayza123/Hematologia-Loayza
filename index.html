@@ -130,6 +130,7 @@ label span.req{color:var(--accent)}
     <div class="nav-item" onclick="openModal('modalLaboratorio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>Laboratorio</div>
     <div class="nav-item" onclick="openModal('modalProcedimiento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Procedimiento</div>
     <div class="nav-item" onclick="openModal('modalTrasplante')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Trasplante</div>
+    <div class="nav-item" onclick="openModal('modalBiomol')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>Biología molecular</div>
   </nav>
 </aside>
 <main class="main">
@@ -179,6 +180,7 @@ label span.req{color:var(--accent)}
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalLaboratorio')">+ Lab</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalProcedimiento')">+ Procedimiento</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalTrasplante')">+ Trasplante</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalBiomol')">+ Mol</button>
       </div>
     </div>
     <div id="detalle-content"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
@@ -501,6 +503,50 @@ label span.req{color:var(--accent)}
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalTrasplante')">Cancelar</button><button class="btn btn-primary" onclick="guardarTrasplante()">Guardar trasplante</button></div>
 </div></div>
 
+<!-- MODAL BIOLOGÍA MOLECULAR -->
+<div id="modalBiomol" class="modal-overlay hidden"><div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar biología molecular</span><button class="modal-close" onclick="closeModal('modalBiomol')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-biomol"></div>
+    <div class="form-grid">
+      <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="bm-paciente" onchange="loadDxPaciente('bm')"><option value="">Seleccionar paciente</option></select></div>
+      <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="bm-diagnostico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="bm-fecha"></div>
+      <div class="form-group"><label>Médico solicitante</label><select id="bm-medico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Técnica</label><select id="bm-tecnica"><option value="">Seleccionar</option><option>PCR convencional</option><option>RT-PCR</option><option>qPCR</option><option>NGS panel</option><option>Secuenciación Sanger</option><option>FISH</option><option>Cariotipo</option><option>Otro</option></select></div>
+    </div>
+    <div class="section-divider">Resultado por gen</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Registra un resultado por gen. Para múltiples genes, guarda y vuelve a abrir el formulario.</p>
+    <div class="form-grid">
+      <div class="form-group"><label>Gen <span class="req">*</span></label><select id="bm-gen"><option value="">Seleccionar</option>
+        <optgroup label="Leucemia Aguda">
+          <option>FLT3-ITD</option><option>FLT3-TKD</option><option>NPM1</option>
+          <option>IDH1</option><option>IDH2</option><option>DNMT3A</option>
+          <option>TET2</option><option>ASXL1</option><option>TP53</option>
+          <option>RUNX1</option><option>CEBPA</option>
+        </optgroup>
+        <optgroup label="Mieloproliferativa crónica">
+          <option>BCR-ABL</option><option>JAK2 V617F</option>
+          <option>CALR</option><option>MPL</option>
+        </optgroup>
+        <optgroup label="SMD">
+          <option>SF3B1</option><option>SRSF2</option><option>U2AF1</option>
+          <option>EZH2</option><option>CBL</option><option>NRAS</option><option>KRAS</option>
+        </optgroup>
+        <optgroup label="Linfoma / LLC">
+          <option>MYD88</option><option>BRAF</option><option>NOTCH1</option>
+        </optgroup>
+        <option>Otro</option>
+      </select></div>
+      <div class="form-group"><label>Resultado <span class="req">*</span></label><select id="bm-resultado"><option value="">Seleccionar</option><option>Positivo / Mutado</option><option>Negativo / No mutado</option><option>No evaluado</option><option>No determinado</option></select></div>
+      <div class="form-group"><label>Valor cuantitativo</label><input type="text" id="bm-valor" placeholder="Ej: 45.3, 0.01, BCR-ABL/ABL ratio"></div>
+      <div class="form-group"><label>Unidad</label><select id="bm-unidad"><option value="">—</option><option>% IS</option><option>copias/uL</option><option>ratio</option><option>%</option><option>Otro</option></select></div>
+      <div class="form-group span2"><label>Observaciones</label><input type="text" id="bm-observaciones" placeholder="Notas adicionales sobre el resultado"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalBiomol')">Cancelar</button><button class="btn btn-primary" onclick="guardarBiomol()">Guardar resultado</button></div>
+</div></div>
+
 <script>
 const URL='https://uuqpuujjlhkpyisrtvvz.supabase.co';
 const KEY='sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
@@ -706,7 +752,7 @@ function showSection(name){
 function openModal(id){
   document.getElementById(id).classList.remove('hidden');
   loadPacsEnSelect();
-  if(id==='modalLaboratorio'||id==='modalProcedimiento'||id==='modalTrasplante')loadMedicosEnModal(id);
+  if(id==='modalLaboratorio'||id==='modalProcedimiento'||id==='modalTrasplante'||id==='modalBiomol')loadMedicosEnModal(id);
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     ['t-ciclo','t-otro-benigno'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
@@ -721,7 +767,7 @@ function closeModal(id){document.getElementById(id).classList.add('hidden');}
 function openModalConPaciente(id){
   openModal(id);
   if(!currentPacId)return;
-  const prefix=id==='modalAtencion'?'a':id==='modalTratamiento'?'t':id==='modalEvento'?'e':id==='modalLaboratorio'?'l':id==='modalProcedimiento'?'pr':id==='modalTrasplante'?'tr':'dx';
+  const prefix=id==='modalAtencion'?'a':id==='modalTratamiento'?'t':id==='modalEvento'?'e':id==='modalLaboratorio'?'l':id==='modalProcedimiento'?'pr':id==='modalTrasplante'?'tr':id==='modalBiomol'?'bm':'dx';
   setTimeout(()=>{const s=document.getElementById(prefix+'-paciente');if(s){s.value=currentPacId;loadDxPaciente(prefix);if(prefix==='e')loadTratPaciente();}},150);
 }
 
@@ -799,7 +845,7 @@ async function verPaciente(pacId){
   currentPacId=pacId;showSection('detalle');
   document.getElementById('detalle-content').innerHTML='<div class="loading"><div class="spinner"></div> Cargando ficha...</div>';
   try{
-    const [pArr,dxs,ats,trts,evs,labs,procs,tras,meds]=await Promise.all([
+    const [pArr,dxs,ats,trts,evs,labs,procs,tras,biomols,meds]=await Promise.all([
       api('GET','paciente',null,`?id=eq.${pacId}&limit=1`),
       api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&order=fecha_debut.desc`),
       api('GET','atencion',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
@@ -808,6 +854,7 @@ async function verPaciente(pacId){
       api('GET','laboratorio',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
       api('GET','procedimiento',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
       api('GET','trasplante',null,`?paciente_id=eq.${pacId}&order=fecha_dia_0.desc`),
+      api('GET','biologia_molecular',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
       api('GET','medico',null,'?select=id,nombre_completo')
     ]);
     const p=pArr[0]; currentPacData=p;
@@ -819,7 +866,8 @@ async function verPaciente(pacId){
       ...dxs.map(d=>({tipo:'diagnostico',fecha:d.fecha_debut,d:d})),
       ...labs.map(l=>({tipo:'laboratorio',fecha:l.fecha,d:l,med:mm[l.medico_id]})),
       ...procs.map(pr=>({tipo:'procedimiento',fecha:pr.fecha,d:pr,med:mm[pr.medico_id]})),
-      ...tras.map(tr=>({tipo:'trasplante',fecha:tr.fecha_dia_0,d:tr,med:mm[tr.medico_id]}))
+      ...tras.map(tr=>({tipo:'trasplante',fecha:tr.fecha_dia_0,d:tr,med:mm[tr.medico_id]})),
+      ...biomols.map(bm=>({tipo:'biomol',fecha:bm.fecha,d:bm,med:mm[bm.medico_id]}))
     ].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
 
     document.getElementById('detalle-content').innerHTML=`
@@ -834,7 +882,7 @@ async function verPaciente(pacId){
             ${dxs[0]?.estado_actual?`<span class="badge badge-blue">${dxs[0].estado_actual}</span>`:''}
           </div>
         </div>
-        <div style="text-align:right;font-size:12px;color:var(--text2)">Ingreso: ${ff(p.fecha_ingreso_hematologia)}<br><span style="color:var(--text3)">${dxs.length} dx · ${ats.length} aten. · ${trts.length} trat. · ${evs.length} eventos · ${labs.length} labs · ${procs.length} proc. · ${tras.length} trasp.</span></div>
+        <div style="text-align:right;font-size:12px;color:var(--text2)">Ingreso: ${ff(p.fecha_ingreso_hematologia)}<br><span style="color:var(--text3)">${dxs.length} dx · ${ats.length} aten. · ${trts.length} trat. · ${evs.length} eventos · ${labs.length} labs · ${procs.length} proc. · ${tras.length} trasp. · ${biomols.length} mol.</span></div>
       </div>
 
       ${p.antecedentes?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Antecedentes</span></div><div class="card-body" style="padding:12px 16px"><div style="display:flex;flex-wrap:wrap;gap:6px">${p.antecedentes.split(',').filter(a=>a.trim()).map(a=>`<span class="badge badge-amber">${a.trim()}</span>`).join('')}</div>${p.otro_antecedente?`<div style="margin-top:8px;font-size:13px;color:var(--text2)">Otro: ${p.otro_antecedente}</div>`:''}</div></div>`:''}
@@ -844,8 +892,8 @@ async function verPaciente(pacId){
 
       <div class="card"><div class="card-header"><span class="card-title">Historia clínica</span><span style="font-size:12px;color:var(--text2)">${tl.length} registros</span></div><div class="card-body">
         ${tl.length?`<div class="timeline">${tl.map(item=>{
-          const icons={atencion:'📋',evento:'⚠️',tratamiento:'💊',diagnostico:'🔬',laboratorio:'🩸',procedimiento:'🔧',trasplante:'🏥'};
-          const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento',trasplante:'dot-diagnostico'};
+          const icons={atencion:'📋',evento:'⚠️',tratamiento:'💊',diagnostico:'🔬',laboratorio:'🩸',procedimiento:'🔧',trasplante:'🏥',biomol:'🧬'};
+          const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento',trasplante:'dot-diagnostico',biomol:'dot-laboratorio'};
           let titulo='',detalle='';
           if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';const extras=[];if(item.d.ecog)extras.push('ECOG '+item.d.ecog);if(item.d.charlson_score!=null)extras.push('Charlson '+item.d.charlson_score);if(item.d.peso_kg)extras.push(item.d.peso_kg+'kg');detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ')+(extras.length?' · '+extras.join(' · '):'');if(item.d.notas)detalle+=(detalle?'<br>':'')+'<em>'+item.d.notas+'</em>';}
           else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.tipo_recaida?item.d.tipo_recaida:null,item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
@@ -860,8 +908,9 @@ async function verPaciente(pacId){
           else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_actual||'';}
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
           else if(item.tipo==='trasplante'){titulo=`Trasplante ${item.d.tipo||'—'}`;detalle=[item.d.fuente_celulas,item.d.regimen_acondicionamiento,item.d.injerto?'Injerto logrado':'Sin injerto',item.d.estado_trasplante].filter(Boolean).join(' · ');}
+          else if(item.tipo==='biomol'){titulo=`${item.d.gen||'Molecular'}: ${item.d.resultado||'—'}`;detalle=[item.d.tecnica,item.d.valor_cuantitativo?item.d.valor_cuantitativo+(item.d.unidad?' '+item.d.unidad:''):''].filter(Boolean).join(' · ');}
           else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.numero_unidades?item.d.numero_unidades+' uds':'',item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
-          const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento',trasplante:'trasplante'};
+          const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento',trasplante:'trasplante',biomol:'biologia_molecular'};
           const tbl=tableMap[item.tipo];
           return`<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta" style="display:flex;justify-content:space-between;align-items:center"><span>${ff(item.fecha)}${item.med?' · '+item.med:''}</span><span style="display:flex;gap:4px"><button onclick="editarRegistro('${item.tipo}','${item.d.id}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--text2)" title="Editar">✏️</button><button onclick="eliminarRegistro('${tbl}','${item.d.id}','${currentPacId}')" style="background:none;border:1px solid #f5c6c2;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--accent)" title="Eliminar">🗑️</button></span></div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
         }).join('')}</div>`:'<div class="empty">Sin registros aún</div>'}
@@ -873,10 +922,10 @@ async function loadMedicos(){
   try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');['a-medico'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
 }
 async function loadMedicosEnModal(modalId){
-  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico',modalTrasplante:'tr-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
+  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico',modalTrasplante:'tr-medico',modalBiomol:'bm-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
 }
 async function loadPacsEnSelect(){
-  try{const ps=await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');const opts='<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');['a-paciente','t-paciente','e-paciente','dx-paciente','l-paciente','pr-paciente','tr-paciente'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
+  try{const ps=await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');const opts='<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');['a-paciente','t-paciente','e-paciente','dx-paciente','l-paciente','pr-paciente','tr-paciente','bm-paciente'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
 }
 async function loadDxPaciente(prefix){
   const pacId=document.getElementById(prefix+'-paciente')?.value;if(!pacId)return;
@@ -1025,6 +1074,22 @@ async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
   try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
 }
+async function guardarBiomol(){
+  const pacId=v('bm-paciente'),gen=v('bm-gen'),resultado=v('bm-resultado'),fecha=v('bm-fecha');
+  if(!pacId||!gen||!resultado||!fecha)return showAlert('alert-biomol','error','Paciente, fecha, gen y resultado son obligatorios.');
+  try{
+    await api('POST','biologia_molecular',{
+      paciente_id:pacId,diagnostico_id:v('bm-diagnostico'),medico_id:v('bm-medico'),
+      fecha,tecnica:v('bm-tecnica'),gen,resultado,
+      valor_cuantitativo:document.getElementById('bm-valor').value.trim()||null,
+      unidad:v('bm-unidad'),
+      observaciones:document.getElementById('bm-observaciones').value.trim()||null
+    });
+    showAlert('alert-biomol','success','✓ Resultado molecular registrado.');
+    setTimeout(()=>{closeModal('modalBiomol');if(currentPacId===pacId)verPaciente(pacId);},1200);
+  }catch(e){showAlert('alert-biomol','error','Error: '+e.message);}
+}
+
 async function guardarTrasplante(){
   const pacId=v('tr-paciente'),tipo=v('tr-tipo'),dia0=v('tr-dia0');
   if(!pacId||!tipo||!dia0)return showAlert('alert-trasplante','error','Paciente, tipo y día 0 son obligatorios.');
