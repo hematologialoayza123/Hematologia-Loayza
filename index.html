@@ -556,19 +556,19 @@ const DX_MAP={
   'Maligno':{
     'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T'],
     'Mieloproliferativa Crónica':['LMC','Policitemia vera','Trombocitemia esencial','Mielofibrosis primaria','Neoplasia mieloproliferativa no especificada'],
-    'Insuficiencia Medular':['Sindrome mielodisplasico','Aplasia medular','Hemoglobinuria paroxistica nocturna'],
-    'Mieloma':['Mieloma multiple','Mieloma indolente','MGUS','Plasmocitoma'],
-    'Linfoma':['LLC','LNH','LH','Macroglobulinemia de Waldenstrom'],
+    'Insuficiencia Medular':['Síndrome mielodisplásico'],
+    'Mieloma':['Mieloma múltiple','Mieloma indolente','MGUS','Plasmocitoma'],
+    'Linfoma':['LLC','LNH','LH','Macroglobulinemia de Waldenström'],
     'Otros':['Amiloidosis AL','Otra']
   },
   'Benigno':{
     'Todos':[
-      'Anemia ferropenica','Anemia megaloblastica','Anemia por deficit de B9',
-      'Anemia secundaria/enfermedad cronica','AHAI','SD EVANS','PTI',
+      'Anemia ferropénica','Anemia megaloblástica','Anemia por déficit de B9',
+      'Anemia secundaria/enfermedad crónica','AHAI','SD EVANS','PTI',
       'Talasemia','Anemia falciforme','Esferocitosis hereditaria',
       'Hemofilia','Enfermedad de Von Willebrand',
       'Coagulopatia','SAF','Trombofilia Primaria','Anticoagulado',
-      'PTT','SD Hemofagocitico',
+      'PTT','SD Hemofagocítico',
       'Enfermedad de Gaucher','Otras Histiocitosis','Otra'
     ]
   }
@@ -577,21 +577,21 @@ const DX_MAP={
 const ESTRATIFICACION_MAP={
   'LMA':['ELN 2022 - Favorable','ELN 2022 - Intermedio','ELN 2022 - Adverso','No evaluado'],
   'LPA':['Bajo riesgo (leucocitos <10k)','Alto riesgo (leucocitos >=10k)','No evaluado'],
-  'LLA-B':['Estandar','Alto riesgo','Muy alto riesgo','Filadelfia positivo','No evaluado'],
-  'LLA-T':['Estandar','Alto riesgo','Muy alto riesgo','No evaluado'],
+  'LLA-B':['Estándar','Alto riesgo','Muy alto riesgo','Filadelfia positivo','No evaluado'],
+  'LLA-T':['Estándar','Alto riesgo','Muy alto riesgo','No evaluado'],
   'LLC':['Binet A','Binet B','Binet C','Rai 0','Rai I','Rai II','Rai III','Rai IV','No evaluado'],
   'LMC':['Sokal - Bajo','Sokal - Intermedio','Sokal - Alto','ELTS - Bajo','ELTS - Intermedio','ELTS - Alto','No evaluado'],
-  'Sindrome mielodisplasico':['IPSS-R - Muy bajo','IPSS-R - Bajo','IPSS-R - Intermedio','IPSS-R - Alto','IPSS-R - Muy alto','No evaluado'],
+  'Síndrome mielodisplásico':['IPSS-R - Muy bajo','IPSS-R - Bajo','IPSS-R - Intermedio','IPSS-R - Alto','IPSS-R - Muy alto','No evaluado'],
   'Policitemia vera':['Bajo riesgo','Alto riesgo','No evaluado'],
   'Trombocitemia esencial':['Bajo riesgo','Intermedio','Alto riesgo','No evaluado'],
   'Mielofibrosis primaria':['DIPSS-Plus - Bajo','DIPSS-Plus - Int-1','DIPSS-Plus - Int-2','DIPSS-Plus - Alto','No evaluado'],
   'Neoplasia mieloproliferativa no especificada':['Bajo riesgo','Alto riesgo','No evaluado'],
   'Aplasia medular':['No grave','Grave','Muy grave','No evaluado'],
-  'Hemoglobinuria paroxistica nocturna':['Sin indicacion de tratamiento','Con indicacion de tratamiento','No evaluado'],
-  'Mieloma multiple':['ISS I','ISS II','ISS III','R-ISS I','R-ISS II','R-ISS III','No evaluado'],
+  'Hemoglobinuria paroxística nocturna':['Sin indicación de tratamiento','Con indicación de tratamiento','No evaluado'],
+  'Mieloma múltiple':['ISS I','ISS II','ISS III','R-ISS I','R-ISS II','R-ISS III','No evaluado'],
   'Mieloma indolente':['IMWG 2/20/20 - Bajo','IMWG 2/20/20 - Intermedio','IMWG 2/20/20 - Alto','No evaluado'],
   'MGUS':['Mayo - Bajo','Mayo - Bajo-intermedio','Mayo - Intermedio-alto','Mayo - Alto','No evaluado'],
-  'Plasmocitoma':['Solitario','Multiple','No evaluado'],
+  'Plasmocitoma':['Solitario','Múltiple','No evaluado'],
   'LNH':[
     'Ann Arbor I','Ann Arbor II','Ann Arbor III','Ann Arbor IV',
     'IPI - Bajo (0-1)','IPI - Bajo-intermedio (2)','IPI - Intermedio-alto (3)','IPI - Alto (4-5)',
@@ -603,7 +603,7 @@ const ESTRATIFICACION_MAP={
     'IPS 0-3 puntos (favorable)','IPS 4-7 puntos (desfavorable)',
     'No evaluado'
   ],
-  'Macroglobulinemia de Waldenstrom':['IPSSWM - Bajo','IPSSWM - Intermedio','IPSSWM - Alto','No evaluado'],
+  'Macroglobulinemia de Waldenström':['IPSSWM - Bajo','IPSSWM - Intermedio','IPSSWM - Alto','No evaluado'],
   'Amiloidosis AL':['Mayo 2004 - I','Mayo 2004 - II','Mayo 2004 - III','Mayo 2004 - IV','No evaluado'],
   'default':['Bajo','Intermedio','Alto','No aplica','No evaluado']
 };
@@ -633,12 +633,12 @@ const RESPUESTAS={
 
 const DX_RESPUESTA_MAP={
   'LMA':'leucemia_aguda','LPA':'leucemia_aguda','LLA-B':'leucemia_aguda','LLA-T':'leucemia_aguda','LLC':'leucemia_aguda',
-  'LMC':'mieloproliferativa','Sindrome mielodisplasico':'smd_insuf',
+  'LMC':'mieloproliferativa','Síndrome mielodisplásico':'smd_insuf',
   'Policitemia vera':'mieloproliferativa','Trombocitemia esencial':'mieloproliferativa',
   'Mielofibrosis primaria':'mieloproliferativa','Neoplasia mieloproliferativa no especificada':'mieloproliferativa',
-  'Aplasia medular':'smd_insuf','Hemoglobinuria paroxistica nocturna':'smd_insuf',
-  'Mieloma multiple':'mieloma','Mieloma indolente':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma',
-  'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenstrom':'linfoma',
+  'Aplasia medular':'smd_insuf','Hemoglobinuria paroxística nocturna':'smd_insuf',
+  'Mieloma múltiple':'mieloma','Mieloma indolente':'mieloma','MGUS':'mieloma','Plasmocitoma':'mieloma',
+  'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenström':'linfoma',
   'Amiloidosis AL':'general'
 };
 
@@ -649,20 +649,20 @@ const ESQUEMAS_MAP={
   'LLA-T':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Otro'],
   'LLC':['FCR','BR','Ibrutinib','Acalabrutinib','Venetoclax + Obinutuzumab','Idelalisib + Rituximab','Clorambucil + Obinutuzumab','Otro'],
   'LMC':['Imatinib','Dasatinib','Nilotinib','Bosutinib','Ponatinib','Asciminib','Hidroxiurea','Otro'],
-  'Sindrome mielodisplasico':['Azacitidina mono','Lenalidomida','EPO/ESA','Luspatercept','Soporte transfusional','Otro'],
+  'Síndrome mielodisplásico':['Azacitidina mono','Lenalidomida','EPO/ESA','Luspatercept','Soporte transfusional','Otro'],
   'Aplasia medular':['Ciclosporina + ATG equina','Ciclosporina + ATG de conejo','Eltrombopag','Ciclosporina mono','Otro'],
-  'Mieloma multiple':['VTD','VRD','DVTd','DVRd','CyBorD','DRC','BDR','KRD','Dara mono','Pomalidomida + Dex','Otro'],
-  'Mieloma indolente':['Observacion activa','VRD','Otro'],
-  'MGUS':['Observacion activa','Otro'],
+  'Mieloma múltiple':['VTD','VRD','DVTd','DVRd','CyBorD','DRC','BDR','KRD','Dara mono','Pomalidomida + Dex','Otro'],
+  'Mieloma indolente':['Observación activa','VRD','Otro'],
+  'MGUS':['Observación activa','Otro'],
   'Plasmocitoma':['Radioterapia','VTD','Otro'],
   'LNH':['R-CHOP','R-EPOCH','CHOP','R-CVP','CVP','BR','Rituximab mono','Obinutuzumab + Clorambucil','Lenalidomida + Rituximab','R-DHAP','R-ICE','R-GDP','Pola-BR','Otro'],
   'LH':['ABVD','BEACOPP escalado','BV-AVD','BV mono','Nivolumab','Pembrolizumab','Otro'],
-  'Macroglobulinemia de Waldenstrom':['BDR','DRC','BR','Ibrutinib','Zanubrutinib','Rituximab mono','Otro'],
+  'Macroglobulinemia de Waldenström':['BDR','DRC','BR','Ibrutinib','Zanubrutinib','Rituximab mono','Otro'],
   'Amiloidosis AL':['CyBorD','VCD','Dara + CyBorD','Otro'],
-  'Policitemia vera':['Hidroxiurea','Ruxolitinib','Flebotomia','Interferon','Otro'],
-  'Trombocitemia esencial':['Hidroxiurea','Anagrelida','Interferon','Ruxolitinib','Otro'],
+  'Policitemia vera':['Hidroxiurea','Ruxolitinib','Flebotomía','Interferón','Otro'],
+  'Trombocitemia esencial':['Hidroxiurea','Anagrelida','Interferón','Ruxolitinib','Otro'],
   'Mielofibrosis primaria':['Ruxolitinib','Fedratinib','Pacritinib','Momelotinib','Hidroxiurea','Otro'],
-  'Hemoglobinuria paroxistica nocturna':['Eculizumab','Ravulizumab','Otro'],
+  'Hemoglobinuria paroxística nocturna':['Eculizumab','Ravulizumab','Otro'],
   // Citorreducción — esquemas independientes del diagnóstico
   '_citorreduccion':['Hidroxiurea','Citarabina dosis bajas (LDAC)','Citarabina dosis altas (HiDAC)','Leucoaféresis','Hidroxiurea + Alopurinol','Otro'],
   // Mantenimiento — por grupo diagnóstico
@@ -671,7 +671,7 @@ const ESQUEMAS_MAP={
   '_mantenimiento_lla':['Metotrexato + 6-Mercaptopurina','Imatinib','Dasatinib','Otro'],
   '_mantenimiento_linfoma':['Rituximab','Lenalidomida','Brentuximab','Otro'],
   '_mantenimiento_mieloma':['Lenalidomida','Bortezomib','Talidomida','Daratumumab','Otro'],
-  '_mantenimiento_general':['Hidroxiurea','Interferon','Otro'],
+  '_mantenimiento_general':['Hidroxiurea','Interferón','Otro'],
   'default':['Otro']
 };
 
@@ -688,8 +688,8 @@ function actualizarEsquemas(dxEspecifico){
     if(['LMA'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lma'];
     else if(['LPA'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lpa'];
     else if(['LLA-B','LLA-T'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lla'];
-    else if(['LNH','LH','LLC','Macroglobulinemia de Waldenstrom'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_linfoma'];
-    else if(['Mieloma multiple','Mieloma indolente','MGUS','Plasmocitoma'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_mieloma'];
+    else if(['LNH','LH','LLC','Macroglobulinemia de Waldenström'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_linfoma'];
+    else if(['Mieloma múltiple','Mieloma indolente','MGUS','Plasmocitoma'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_mieloma'];
     else opciones=ESQUEMAS_MAP['_mantenimiento_general'];
   } else {
     opciones=ESQUEMAS_MAP[dxEspecifico]||ESQUEMAS_MAP['default'];
@@ -730,9 +730,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div class="form-grid">
     <div class="form-group span2"><label>Estado al primer contacto <span style="color:var(--text3);font-weight:400">(se registra una sola vez)</span></label><select id="d-estado-debut"><option value="">Seleccionar</option><option>Debut — diagnóstico nuevo</option><option>Previamente tratado — RC</option><option>Previamente tratado — RP</option><option>Previamente tratado — en tratamiento activo</option><option>Previamente tratado — en recaída</option><option>Previamente tratado — en progresión</option><option>Previamente tratado — enfermedad estable</option><option>Referido — en observación</option><option>Referido — en cuidados paliativos</option><option>Desconocido</option></select></div>
     <div class="form-group span2"><label>Estado actual <span style="color:var(--text3);font-weight:400">(actualizar en cada control)</span></label><select id="d-estado-actual"><option value="">Seleccionar</option><option>Debut</option><option>En tratamiento</option><option>RC</option><option>RP</option><option>Mantenimiento</option><option>Observación</option><option>Enfermedad estable</option><option>Recaída</option><option>Progresión</option><option>Refractario</option><option>Cuidados paliativos</option><option>Pérdida de seguimiento</option></select></div>
+    <div class="form-group"><label>Síntomas B (linfomas)</label><select id="d-sintomas-b"><option value="">—</option><option>A - Sin síntomas B</option><option>B - Con síntomas B</option><option>No aplica</option><option>No evaluado</option></select></div>
   </div>
   <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 0 10px;border-bottom:1px solid var(--border);margin:14px 0">Evaluación basal al diagnóstico</div>
   <div class="form-grid cols4"><div class="form-group"><label>ECOG basal</label><select id="d-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div class="form-group"><label>Charlson basal</label><input type="number" id="d-charlson-basal" min="0" max="37" placeholder="0-37"></div><div class="form-group"><label>Peso basal (kg)</label><input type="number" id="d-peso-basal" step="0.1" placeholder="Ej: 68.5"></div><div class="form-group"><label>Talla (cm)</label><input type="number" id="d-talla" step="0.1" placeholder="Ej: 165.0"></div></div>
+  <div class="form-grid" style="margin-top:10px"><div class="form-group"><label>Fecha inicio tratamiento</label><input type="date" id="d-fecha-inicio-trat"></div><div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="d-dep-transfusional"> Dependencia transfusional al diagnóstico</label></div></div>
   <div class="form-group" style="margin-top:10px"><label>Prueba confirmatoria</label><div class="checkbox-grid" id="pruebas-grid-p"></div><div class="form-group hidden" id="p-otra-prueba-wrap" style="margin-top:8px"><label>Especificar otra prueba</label><input type="text" id="p-otra-prueba" placeholder="Describir prueba confirmatoria"></div></div>`;
   const pgp=document.getElementById('pruebas-grid-p');
   PRUEBAS.forEach(p=>{
@@ -1025,7 +1027,7 @@ async function guardarPaciente(){
     const res=await api('POST','paciente',{hc,nombre,sexo:v('p-sexo'),fecha_nacimiento:v('p-fnac'),fecha_ingreso_hematologia:v('p-fingreso'),seguro:v('p-seguro'),estado_vital:v('p-estado-vital')||'Vivo',antecedentes:getChecked('ant')||null,otro_antecedente:document.getElementById('p-otro-ant').value.trim()||null});
     const pac=Array.isArray(res)?res[0]:res;
     const dxEsp=v('d-especifico'),dxFecha=v('d-fecha');
-    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla')});
+    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),sintomas_b:v('d-sintomas-b'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla'),fecha_inicio_tratamiento:v('d-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('d-dep-transfusional')?.checked||false});
     showAlert('alert-paciente','success','✓ Paciente registrado.');
     setTimeout(()=>{closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
   }catch(e){showAlert('alert-paciente','error','Error: '+e.message);}
