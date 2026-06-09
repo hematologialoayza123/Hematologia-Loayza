@@ -651,7 +651,20 @@ function showSection(name){
   if(name==='pacientes'){document.querySelectorAll('.nav-item')[1].classList.add('active');loadPacientes();}
   else if(name==='dashboard')document.querySelectorAll('.nav-item')[0].classList.add('active');
 }
-function openModal(id){document.getElementById(id).classList.remove('hidden');loadPacsEnSelect();if(id==='modalLaboratorio'||id==='modalProcedimiento')loadMedicosEnModal(id);}
+function openModal(id){
+  document.getElementById(id).classList.remove('hidden');
+  loadPacsEnSelect();
+  if(id==='modalLaboratorio'||id==='modalProcedimiento')loadMedicosEnModal(id);
+  // Limpiar formulario de tratamiento al abrir para nuevo registro
+  if(id==='modalTratamiento'){
+    ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
+    ['t-ciclo','t-otro-benigno'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
+    ['t-inicio','t-fin','t-fecha-respuesta'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value=new Date().toISOString().split('T')[0];});
+    document.querySelector('#modalTratamiento .modal-title').textContent='Registrar tratamiento';
+    document.querySelector('#modalTratamiento .btn-primary').onclick=guardarTratamiento;
+    toggleTratFields();
+  }
+}
 function closeModal(id){document.getElementById(id).classList.add('hidden');}
 function openModalConPaciente(id){
   openModal(id);
@@ -825,10 +838,14 @@ async function loadDxPaciente(prefix){
         }
       };
       // Si ya hay una opción seleccionada, actualizar respuestas
-      if(prefix==='t'&&dxs.length===1){
+      if(prefix==='t'&&dxs.length===1&&!document.getElementById('t-paciente')?.dataset?.loaded){
         sel.value=dxs[0].id;
         actualizarOpcionesRespuesta(dxs[0].diagnostico_especifico||'');
         actualizarEsquemas(dxs[0].diagnostico_especifico||'');
+      } else if(prefix==='t'&&dxs.length>0){
+        // Solo actualizar esquemas sin cambiar selección
+        const currentDx=dxs.find(d=>d.id===sel.value);
+        if(currentDx){actualizarOpcionesRespuesta(currentDx.diagnostico_especifico||'');actualizarEsquemas(currentDx.diagnostico_especifico||'');}
       }
     }
   }catch(e){}
