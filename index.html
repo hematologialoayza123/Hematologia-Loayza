@@ -129,6 +129,7 @@ label span.req{color:var(--accent)}
     <div class="nav-item" onclick="openModal('modalEvento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Evento clínico</div>
     <div class="nav-item" onclick="openModal('modalLaboratorio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>Laboratorio</div>
     <div class="nav-item" onclick="openModal('modalProcedimiento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Procedimiento</div>
+    <div class="nav-item" onclick="openModal('modalTrasplante')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Trasplante</div>
   </nav>
 </aside>
 <main class="main">
@@ -177,6 +178,7 @@ label span.req{color:var(--accent)}
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalEvento')">+ Evento</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalLaboratorio')">+ Lab</button>
         <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalProcedimiento')">+ Procedimiento</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModalConPaciente('modalTrasplante')">+ Trasplante</button>
       </div>
     </div>
     <div id="detalle-content"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
@@ -225,7 +227,7 @@ label span.req{color:var(--accent)}
     </div>
     <div id="fallecimiento-fields" class="form-grid hidden" style="margin-top:10px">
       <div class="form-group"><label>Fecha de fallecimiento</label><input type="date" id="ep-fecha-fall"></div>
-      <div class="form-group"><label>Causa de fallecimiento</label><select id="ep-causa-fall"><option value="">Seleccionar</option><option>Progresión de enfermedad</option><option>Infección</option><option>Toxicidad</option><option>Sangrado</option><option>Falla orgánica múltiple</option><option>Otro</option><option>Desconocido</option></select></div>
+      <div class="form-group"><label>Causa de fallecimiento</label><select id="ep-causa-fall"><option value="">Seleccionar</option><option>Muerte en inducción</option><option>Muerte en remisión</option><option>Muerte por progresión de enfermedad</option><option>Muerte por infección</option><option>Muerte por toxicidad</option><option>Muerte por sangrado</option><option>Muerte por falla orgánica múltiple</option><option>Muerte no relacionada a enfermedad</option><option>Causa desconocida</option></select></div>
     </div>
     <div class="section-divider">Antecedentes</div>
     <div class="checkbox-grid" id="antecedentes-grid-editar"></div>
@@ -247,6 +249,7 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Diagnóstico específico</label><select id="dx-especifico"><option value="">Seleccionar categoría primero</option></select></div>
       <div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="dx-otro" placeholder="Especificar si aplica"></div>
       <div class="form-group"><label>Estratificación de riesgo</label><select id="dx-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div>
+      <div class="form-group"><label>Síntomas B <span style="color:var(--text3);font-weight:400">(linfomas)</span></label><select id="dx-sintomas-b"><option value="">—</option><option>A - Sin síntomas B</option><option>B - Con síntomas B</option><option>No aplica</option><option>No evaluado</option></select></div>
     </div>
 
     <div class="section-divider">Estado de la enfermedad</div>
@@ -293,6 +296,10 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Charlson basal</label><input type="number" id="dx-charlson-basal" min="0" max="37" placeholder="0-37"></div>
       <div class="form-group"><label>Peso basal (kg)</label><input type="number" id="dx-peso-basal" step="0.1" placeholder="Ej: 68.5"></div>
       <div class="form-group"><label>Talla (cm)</label><input type="number" id="dx-talla" step="0.1" placeholder="Ej: 165.0"></div>
+    </div>
+    <div class="form-grid" style="margin-top:10px">
+      <div class="form-group"><label>Fecha inicio tratamiento</label><input type="date" id="dx-fecha-inicio-trat"></div>
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="dx-dep-transfusional"> Dependencia transfusional al diagnóstico</label></div>
     </div>
 
     <div class="section-divider">Prueba confirmatoria</div>
@@ -438,15 +445,60 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="pr-paciente" onchange="loadDxPaciente('pr')"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="pr-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="pr-fecha"></div>
-      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo"><option value="">Seleccionar</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Administración de QT intratecal</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Plasmaféresis</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo" onchange="toggleTransfusionFields()"><option value="">Seleccionar</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Administración de QT intratecal</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Plasmaféresis</option><option>Otro</option></select></div>
       <div class="form-group"><label>Operador</label><select id="pr-medico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Descripción / Técnica</label><input type="text" id="pr-descripcion" placeholder="Descripción breve"></div>
       <div class="form-group span2"><label>Hallazgos</label><textarea id="pr-hallazgos" placeholder="Hallazgos del procedimiento..."></textarea></div>
       <div class="form-group span2"><label>Resultado anatomopatológico</label><textarea id="pr-resultado" placeholder="Resultado de biopsia si aplica..."></textarea></div>
       <div class="form-group span2"><label>Complicaciones</label><input type="text" id="pr-complicaciones" placeholder="Ninguna / especificar"></div>
+      <div class="form-group hidden" id="pr-transfusion-wrap">
+        <label>N° unidades</label><input type="number" id="pr-unidades" min="1" placeholder="Ej: 2">
+      </div>
+      <div class="form-group hidden" id="pr-hb-wrap">
+        <label>Hb pre (g/dL)</label><input type="number" id="pr-hb-pre" step="0.1" placeholder="—">
+      </div>
+      <div class="form-group hidden" id="pr-hb-post-wrap">
+        <label>Hb post (g/dL)</label><input type="number" id="pr-hb-post" step="0.1" placeholder="—">
+      </div>
+      <div class="form-group hidden" id="pr-reaccion-wrap" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px">
+        <label class="checkbox-item"><input type="checkbox" id="pr-reaccion"> Reacción transfusional</label>
+      </div>
     </div>
   </div>
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalProcedimiento')">Cancelar</button><button class="btn btn-primary" onclick="guardarProcedimiento()">Guardar procedimiento</button></div>
+</div></div>
+
+<!-- MODAL TRASPLANTE -->
+<div id="modalTrasplante" class="modal-overlay hidden"><div class="modal">
+  <div class="modal-header"><span class="modal-title">Registrar trasplante</span><button class="modal-close" onclick="closeModal('modalTrasplante')">✕</button></div>
+  <div class="modal-body">
+    <div id="alert-trasplante"></div>
+    <div class="form-grid">
+      <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="tr-paciente" onchange="loadDxPaciente('tr')"><option value="">Seleccionar paciente</option></select></div>
+      <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="tr-diagnostico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group"><label>Tipo de trasplante <span class="req">*</span></label><select id="tr-tipo"><option value="">Seleccionar</option><option>Autólogo</option><option>Alogénico emparentado</option><option>Alogénico no emparentado</option><option>Haploidéntico</option><option>Cordón umbilical</option></select></div>
+      <div class="form-group"><label>Fuente de células</label><select id="tr-fuente"><option value="">Seleccionar</option><option>Médula ósea</option><option>Sangre periférica</option><option>Cordón umbilical</option></select></div>
+      <div class="form-group"><label>Régimen de acondicionamiento</label><select id="tr-regimen"><option value="">Seleccionar</option><option>Mieloablativo</option><option>Intensidad reducida (RIC)</option><option>No mieloablativo</option></select></div>
+      <div class="form-group"><label>Esquema de acondicionamiento</label><input type="text" id="tr-esquema" placeholder="Ej: BuCy, BEAM, FluMel"></div>
+      <div class="form-group"><label>Donante</label><input type="text" id="tr-donante" placeholder="Hermano HLA idéntico, etc."></div>
+      <div class="form-group"><label>Fecha día 0 <span class="req">*</span></label><input type="date" id="tr-dia0"></div>
+    </div>
+    <div class="section-divider">Injerto</div>
+    <div class="form-grid">
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:4px"><label class="checkbox-item"><input type="checkbox" id="tr-injerto"> Injerto logrado</label></div>
+      <div class="form-group"><label>Fecha injerto neutrófilos</label><input type="date" id="tr-injerto-neutro"></div>
+      <div class="form-group"><label>Fecha injerto plaquetas</label><input type="date" id="tr-injerto-plaq"></div>
+    </div>
+    <div class="section-divider">EICH y seguimiento</div>
+    <div class="form-grid">
+      <div class="form-group"><label>EICH agudo</label><select id="tr-eich-agudo"><option value="">—</option><option>No</option><option>Grado I</option><option>Grado II</option><option>Grado III</option><option>Grado IV</option></select></div>
+      <div class="form-group"><label>EICH crónico</label><select id="tr-eich-cronico"><option value="">—</option><option>No</option><option>Leve</option><option>Moderado</option><option>Grave</option></select></div>
+      <div class="form-group"><label>Estado post-trasplante</label><select id="tr-estado"><option value="">Seleccionar</option><option>En seguimiento</option><option>Recaída post-trasplante</option><option>Fallecido</option><option>Perdido</option></select></div>
+      <div class="form-group"><label>Médico responsable</label><select id="tr-medico"><option value="">Seleccionar</option></select></div>
+      <div class="form-group span2"><label>Observaciones</label><textarea id="tr-observaciones" placeholder="Notas adicionales..."></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalTrasplante')">Cancelar</button><button class="btn btn-primary" onclick="guardarTrasplante()">Guardar trasplante</button></div>
 </div></div>
 
 <script>
@@ -654,8 +706,7 @@ function showSection(name){
 function openModal(id){
   document.getElementById(id).classList.remove('hidden');
   loadPacsEnSelect();
-  if(id==='modalLaboratorio'||id==='modalProcedimiento')loadMedicosEnModal(id);
-  // Limpiar formulario de tratamiento al abrir para nuevo registro
+  if(id==='modalLaboratorio'||id==='modalProcedimiento'||id==='modalTrasplante')loadMedicosEnModal(id);
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     ['t-ciclo','t-otro-benigno'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
@@ -670,7 +721,7 @@ function closeModal(id){document.getElementById(id).classList.add('hidden');}
 function openModalConPaciente(id){
   openModal(id);
   if(!currentPacId)return;
-  const prefix=id==='modalAtencion'?'a':id==='modalTratamiento'?'t':id==='modalEvento'?'e':id==='modalLaboratorio'?'l':id==='modalProcedimiento'?'pr':'dx';
+  const prefix=id==='modalAtencion'?'a':id==='modalTratamiento'?'t':id==='modalEvento'?'e':id==='modalLaboratorio'?'l':id==='modalProcedimiento'?'pr':id==='modalTrasplante'?'tr':'dx';
   setTimeout(()=>{const s=document.getElementById(prefix+'-paciente');if(s){s.value=currentPacId;loadDxPaciente(prefix);if(prefix==='e')loadTratPaciente();}},150);
 }
 
@@ -748,7 +799,7 @@ async function verPaciente(pacId){
   currentPacId=pacId;showSection('detalle');
   document.getElementById('detalle-content').innerHTML='<div class="loading"><div class="spinner"></div> Cargando ficha...</div>';
   try{
-    const [pArr,dxs,ats,trts,evs,labs,procs,meds]=await Promise.all([
+    const [pArr,dxs,ats,trts,evs,labs,procs,tras,meds]=await Promise.all([
       api('GET','paciente',null,`?id=eq.${pacId}&limit=1`),
       api('GET','diagnostico',null,`?paciente_id=eq.${pacId}&order=fecha_debut.desc`),
       api('GET','atencion',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
@@ -756,6 +807,7 @@ async function verPaciente(pacId){
       api('GET','evento_clinico',null,`?paciente_id=eq.${pacId}&order=fecha_evento.desc`),
       api('GET','laboratorio',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
       api('GET','procedimiento',null,`?paciente_id=eq.${pacId}&order=fecha.desc`),
+      api('GET','trasplante',null,`?paciente_id=eq.${pacId}&order=fecha_dia_0.desc`),
       api('GET','medico',null,'?select=id,nombre_completo')
     ]);
     const p=pArr[0]; currentPacData=p;
@@ -766,7 +818,8 @@ async function verPaciente(pacId){
       ...trts.map(t=>({tipo:'tratamiento',fecha:t.fecha_inicio,d:t})),
       ...dxs.map(d=>({tipo:'diagnostico',fecha:d.fecha_debut,d:d})),
       ...labs.map(l=>({tipo:'laboratorio',fecha:l.fecha,d:l,med:mm[l.medico_id]})),
-      ...procs.map(pr=>({tipo:'procedimiento',fecha:pr.fecha,d:pr,med:mm[pr.medico_id]}))
+      ...procs.map(pr=>({tipo:'procedimiento',fecha:pr.fecha,d:pr,med:mm[pr.medico_id]})),
+      ...tras.map(tr=>({tipo:'trasplante',fecha:tr.fecha_dia_0,d:tr,med:mm[tr.medico_id]}))
     ].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
 
     document.getElementById('detalle-content').innerHTML=`
@@ -781,7 +834,7 @@ async function verPaciente(pacId){
             ${dxs[0]?.estado_actual?`<span class="badge badge-blue">${dxs[0].estado_actual}</span>`:''}
           </div>
         </div>
-        <div style="text-align:right;font-size:12px;color:var(--text2)">Ingreso: ${ff(p.fecha_ingreso_hematologia)}<br><span style="color:var(--text3)">${dxs.length} dx · ${ats.length} aten. · ${trts.length} trat. · ${evs.length} eventos · ${labs.length} labs · ${procs.length} proc.</span></div>
+        <div style="text-align:right;font-size:12px;color:var(--text2)">Ingreso: ${ff(p.fecha_ingreso_hematologia)}<br><span style="color:var(--text3)">${dxs.length} dx · ${ats.length} aten. · ${trts.length} trat. · ${evs.length} eventos · ${labs.length} labs · ${procs.length} proc. · ${tras.length} trasp.</span></div>
       </div>
 
       ${p.antecedentes?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Antecedentes</span></div><div class="card-body" style="padding:12px 16px"><div style="display:flex;flex-wrap:wrap;gap:6px">${p.antecedentes.split(',').filter(a=>a.trim()).map(a=>`<span class="badge badge-amber">${a.trim()}</span>`).join('')}</div>${p.otro_antecedente?`<div style="margin-top:8px;font-size:13px;color:var(--text2)">Otro: ${p.otro_antecedente}</div>`:''}</div></div>`:''}
@@ -791,8 +844,8 @@ async function verPaciente(pacId){
 
       <div class="card"><div class="card-header"><span class="card-title">Historia clínica</span><span style="font-size:12px;color:var(--text2)">${tl.length} registros</span></div><div class="card-body">
         ${tl.length?`<div class="timeline">${tl.map(item=>{
-          const icons={atencion:'📋',evento:'⚠️',tratamiento:'💊',diagnostico:'🔬',laboratorio:'🩸',procedimiento:'🔧'};
-          const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento'};
+          const icons={atencion:'📋',evento:'⚠️',tratamiento:'💊',diagnostico:'🔬',laboratorio:'🩸',procedimiento:'🔧',trasplante:'🏥'};
+          const dots={atencion:'dot-atencion',evento:'dot-evento',tratamiento:'dot-tratamiento',diagnostico:'dot-diagnostico',laboratorio:'dot-laboratorio',procedimiento:'dot-procedimiento',trasplante:'dot-diagnostico'};
           let titulo='',detalle='';
           if(item.tipo==='atencion'){titulo=item.d.tipo_atencion||'Atención';const extras=[];if(item.d.ecog)extras.push('ECOG '+item.d.ecog);if(item.d.charlson_score!=null)extras.push('Charlson '+item.d.charlson_score);if(item.d.peso_kg)extras.push(item.d.peso_kg+'kg');detalle=[item.d.motivo,item.d.conducta].filter(Boolean).join(' → ')+(extras.length?' · '+extras.join(' · '):'');if(item.d.notas)detalle+=(detalle?'<br>':'')+'<em>'+item.d.notas+'</em>';}
           else if(item.tipo==='evento'){titulo=`${item.d.tipo_evento||'Evento'}${item.d.sistema_comprometido?' · '+item.d.sistema_comprometido:''}${item.d.grado?' · G'+item.d.grado:''}`;detalle=[item.d.tipo_recaida?item.d.tipo_recaida:null,item.d.estado,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');}
@@ -803,10 +856,12 @@ async function verPaciente(pacId){
             else if(item.d.tipo_tratamiento==='Terapia dirigida')titulo=`Terapia dirigida: ${esq||'—'}`;
             else titulo=item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento';
             detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.emr?'EMR: '+item.d.emr:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');
-          }          else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_enfermedad||'';}
+          }
+          else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_actual||'';}
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
-          else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
-          const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento'};
+          else if(item.tipo==='trasplante'){titulo=`Trasplante ${item.d.tipo||'—'}`;detalle=[item.d.fuente_celulas,item.d.regimen_acondicionamiento,item.d.injerto?'Injerto logrado':'Sin injerto',item.d.estado_trasplante].filter(Boolean).join(' · ');}
+          else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.numero_unidades?item.d.numero_unidades+' uds':'',item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
+          const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento',trasplante:'trasplante'};
           const tbl=tableMap[item.tipo];
           return`<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta" style="display:flex;justify-content:space-between;align-items:center"><span>${ff(item.fecha)}${item.med?' · '+item.med:''}</span><span style="display:flex;gap:4px"><button onclick="editarRegistro('${item.tipo}','${item.d.id}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--text2)" title="Editar">✏️</button><button onclick="eliminarRegistro('${tbl}','${item.d.id}','${currentPacId}')" style="background:none;border:1px solid #f5c6c2;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--accent)" title="Eliminar">🗑️</button></span></div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
         }).join('')}</div>`:'<div class="empty">Sin registros aún</div>'}
@@ -818,10 +873,10 @@ async function loadMedicos(){
   try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');['a-medico'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
 }
 async function loadMedicosEnModal(modalId){
-  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
+  try{const meds=await api('GET','medico',null,'?order=nombre_completo');const opts='<option value="">Seleccionar</option>'+meds.map(m=>`<option value="${m.id}">${m.nombre_completo}</option>`).join('');const map={modalLaboratorio:'l-medico',modalProcedimiento:'pr-medico',modalTrasplante:'tr-medico'};const el=document.getElementById(map[modalId]);if(el)el.innerHTML=opts;}catch(e){}
 }
 async function loadPacsEnSelect(){
-  try{const ps=await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');const opts='<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');['a-paciente','t-paciente','e-paciente','dx-paciente','l-paciente','pr-paciente'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
+  try{const ps=await api('GET','paciente',null,'?select=id,nombre,hc&order=nombre.asc');const opts='<option value="">Seleccionar paciente</option>'+ps.map(p=>`<option value="${p.id}">${p.nombre} — ${p.hc}</option>`).join('');['a-paciente','t-paciente','e-paciente','dx-paciente','l-paciente','pr-paciente','tr-paciente'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});}catch(e){}
 }
 async function loadDxPaciente(prefix){
   const pacId=document.getElementById(prefix+'-paciente')?.value;if(!pacId)return;
@@ -937,13 +992,16 @@ async function guardarDiagnostico(){
       diagnostico_especifico:v('dx-especifico'),
       otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,
       estratificacion_riesgo:v('dx-riesgo'),
+      sintomas_b:v('dx-sintomas-b'),
       estado_debut:v('dx-estado-debut'),
       estado_actual:v('dx-estado-actual'),
       prueba_confirmatoria:(()=>{let p=getChecked('prueba-dx');const otro=document.getElementById('dx-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),
       ecog_basal:v('dx-ecog-basal'),
       charlson_basal:vni('dx-charlson-basal'),
       peso_basal:vn('dx-peso-basal'),
-      talla_cm:vn('dx-talla')
+      talla_cm:vn('dx-talla'),
+      fecha_inicio_tratamiento:v('dx-fecha-inicio-trat'),
+      dependencia_transfusional:document.getElementById('dx-dep-transfusional')?.checked||false
     });
     showAlert('alert-diagnostico','success','✓ Diagnóstico agregado.');
     setTimeout(()=>{closeModal('modalDiagnostico');if(currentPacId===pacId)verPaciente(pacId);},1200);
@@ -967,9 +1025,59 @@ async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
   try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
 }
+async function guardarTrasplante(){
+  const pacId=v('tr-paciente'),tipo=v('tr-tipo'),dia0=v('tr-dia0');
+  if(!pacId||!tipo||!dia0)return showAlert('alert-trasplante','error','Paciente, tipo y día 0 son obligatorios.');
+  try{
+    await api('POST','trasplante',{
+      paciente_id:pacId,diagnostico_id:v('tr-diagnostico'),
+      medico_id:v('tr-medico'),tipo,
+      fuente_celulas:v('tr-fuente'),
+      regimen_acondicionamiento:v('tr-regimen'),
+      esquema_acondicionamiento:document.getElementById('tr-esquema').value.trim()||null,
+      donante:document.getElementById('tr-donante').value.trim()||null,
+      fecha_dia_0:dia0,
+      injerto:document.getElementById('tr-injerto').checked,
+      fecha_injerto_neutrofilos:v('tr-injerto-neutro'),
+      fecha_injerto_plaquetas:v('tr-injerto-plaq'),
+      eich_agudo:v('tr-eich-agudo'),
+      eich_cronico:v('tr-eich-cronico'),
+      estado_trasplante:v('tr-estado'),
+      observaciones:document.getElementById('tr-observaciones').value.trim()||null
+    });
+    showAlert('alert-trasplante','success','✓ Trasplante registrado.');
+    setTimeout(()=>{closeModal('modalTrasplante');if(currentPacId===pacId)verPaciente(pacId);},1200);
+  }catch(e){showAlert('alert-trasplante','error','Error: '+e.message);}
+}
+
+function toggleTransfusionFields(){
+  const tipo=document.getElementById('pr-tipo')?.value||'';
+  const esTrans=tipo.includes('Transfusión');
+  ['pr-transfusion-wrap','pr-hb-wrap','pr-hb-post-wrap','pr-reaccion-wrap'].forEach(id=>{
+    document.getElementById(id)?.classList.toggle('hidden',!esTrans);
+  });
+}
+
 async function guardarProcedimiento(){
   const pacId=v('pr-paciente'),tipo=v('pr-tipo'),fecha=v('pr-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-procedimiento','error','Paciente, tipo y fecha son obligatorios.');
-  try{await api('POST','procedimiento',{paciente_id:pacId,diagnostico_id:v('pr-diagnostico'),medico_id:v('pr-medico'),fecha,tipo,descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null});showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-procedimiento','error','Error: '+e.message);}
+  try{
+    const tipo=v('pr-tipo');
+    const esTrans=tipo?.includes('Transfusión');
+    await api('POST','procedimiento',{
+      paciente_id:pacId,diagnostico_id:v('pr-diagnostico'),medico_id:v('pr-medico'),
+      fecha,tipo,
+      descripcion:document.getElementById('pr-descripcion').value.trim()||null,
+      hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,
+      resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,
+      complicaciones:document.getElementById('pr-complicaciones').value.trim()||null,
+      numero_unidades:esTrans?vni('pr-unidades'):null,
+      hb_pre:esTrans?vn('pr-hb-pre'):null,
+      hb_post:esTrans?vn('pr-hb-post'):null,
+      reaccion_transfusional:esTrans?document.getElementById('pr-reaccion').checked:false
+    });
+    showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');
+    setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);
+  }catch(e){showAlert('alert-procedimiento','error','Error: '+e.message);}
 }
 // ===== ELIMINAR PACIENTE =====
 async function eliminarPaciente(){
@@ -1037,14 +1145,17 @@ async function editarRegistro(tipo, id){
         setTimeout(()=>{sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
           setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
         svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
+        sv('dx-sintomas-b',r.sintomas_b);
         sv('dx-estado-debut',r.estado_debut);sv('dx-estado-actual',r.estado_actual);
         sv('dx-ecog-basal',r.ecog_basal);
+        sv('dx-fecha-inicio-trat',r.fecha_inicio_tratamiento);
+        if(r.dependencia_transfusional)document.getElementById('dx-dep-transfusional').checked=true;
         setTimeout(()=>{actualizarOpcionesEstrategificacion('dx');sv('dx-riesgo',r.estratificacion_riesgo);},150);
         svi('dx-charlson-basal',r.charlson_basal);svn('dx-peso-basal',r.peso_basal);
         svn('dx-talla',r.talla_cm);
         if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
         document.querySelector('#modalDiagnostico .modal-title').textContent='Editar diagnóstico';
-        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),estado_debut:v('dx-estado-debut'),estado_actual:v('dx-estado-actual'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla')},'modalDiagnostico','alert-diagnostico');
+        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),sintomas_b:v('dx-sintomas-b'),estado_debut:v('dx-estado-debut'),estado_actual:v('dx-estado-actual'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla'),fecha_inicio_tratamiento:v('dx-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('dx-dep-transfusional')?.checked||false},'modalDiagnostico','alert-diagnostico');
       },200);
     }
     else if(tipo==='tratamiento'){
@@ -1126,8 +1237,14 @@ async function editarRegistro(tipo, id){
         sv('pr-tipo',r.tipo);sv('pr-medico',r.medico_id);
         svt('pr-descripcion',r.descripcion);svt('pr-hallazgos',r.hallazgos);
         svt('pr-resultado',r.resultado_anatomopat);svt('pr-complicaciones',r.complicaciones);
+        svi('pr-unidades',r.numero_unidades);svn('pr-hb-pre',r.hb_pre);svn('pr-hb-post',r.hb_post);
+        if(r.reaccion_transfusional)document.getElementById('pr-reaccion').checked=true;
+        toggleTransfusionFields();
         document.querySelector('#modalProcedimiento .modal-title').textContent='Editar procedimiento';
-        document.querySelector('#modalProcedimiento .btn-primary').onclick=()=>actualizarRegistro('procedimiento',id,{fecha:v('pr-fecha'),tipo:v('pr-tipo'),medico_id:v('pr-medico'),descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null},'modalProcedimiento','alert-procedimiento');
+        document.querySelector('#modalProcedimiento .btn-primary').onclick=()=>{
+          const tipo2=v('pr-tipo');const esTrans=tipo2?.includes('Transfusión');
+          actualizarRegistro('procedimiento',id,{fecha:v('pr-fecha'),tipo:tipo2,medico_id:v('pr-medico'),descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null,numero_unidades:esTrans?vni('pr-unidades'):null,hb_pre:esTrans?vn('pr-hb-pre'):null,hb_post:esTrans?vn('pr-hb-post'):null,reaccion_transfusional:esTrans?document.getElementById('pr-reaccion').checked:false},'modalProcedimiento','alert-procedimiento');
+        };
       },200);
     }
   }catch(e){alert('Error al cargar registro: '+e.message);}
