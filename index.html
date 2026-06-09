@@ -945,7 +945,20 @@ async function eliminarRegistro(tabla, id, pacId){
   try{
     await api('DELETE',tabla,null,`?id=eq.${id}`);
     verPaciente(pacId);
-  }catch(e){alert('Error al eliminar: '+e.message);}
+  }catch(e){
+    // Mensajes de error clínicamente claros
+    let msg='Error al eliminar.';
+    if(e.message.includes('evento_clinico_tratamiento_id_fkey')||e.message.includes('fkey')){
+      msg='No se puede eliminar este tratamiento porque tiene eventos clínicos vinculados (recaídas, toxicidades, etc.).\n\nPrimero elimina los eventos asociados desde la historia clínica y luego intenta de nuevo.';
+    } else if(e.message.includes('atencion')){
+      msg='No se puede eliminar este diagnóstico porque tiene atenciones vinculadas.\n\nPrimero elimina las atenciones asociadas.';
+    } else if(e.message.includes('tratamiento')){
+      msg='No se puede eliminar porque tiene registros vinculados.\n\nElimina primero los registros asociados.';
+    } else if(e.message.includes('foreign key')||e.message.includes('violates')){
+      msg='No se puede eliminar porque otros registros dependen de este.\n\nRevisa y elimina primero los registros vinculados en la historia clínica.';
+    }
+    alert(msg);
+  }
 }
 
 // ===== EDITAR =====
