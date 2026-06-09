@@ -329,11 +329,10 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Conducta</label><select id="a-conducta"><option value="">Seleccionar</option><option>Observación</option><option>Continuar tratamiento</option><option>Cambio de tratamiento</option><option>Suspensión de tratamiento</option><option>Programación de tratamiento</option><option>Transfusión</option><option>Ingreso a EMG</option><option>Alta Hospitalaria/Control por CE</option><option>Alta del servicio</option><option>Inicio de Tratamiento</option></select></div>
     </div>
     <div class="section-divider">Evaluación clínica</div>
-    <div class="form-grid cols4">
+    <div class="form-grid cols3">
       <div class="form-group"><label>ECOG</label><select id="a-ecog"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
       <div class="form-group"><label>Charlson Score</label><input type="number" id="a-charlson" min="0" max="37" placeholder="0-37"></div>
       <div class="form-group"><label>Peso (kg)</label><input type="number" id="a-peso" step="0.1" placeholder="Ej: 68.5"></div>
-      <div class="form-group"><label>Talla (cm)</label><input type="number" id="a-talla" step="0.1" placeholder="Ej: 165.0"></div>
     </div>
     <div class="form-group" style="margin-top:10px"><label>Notas clínicas</label><textarea id="a-notas" placeholder="Observaciones, evolución, plan..."></textarea></div>
   </div>
@@ -352,8 +351,7 @@ label span.req{color:var(--accent)}
       <div class="form-group" id="t-esquema-wrap"><label>Esquema</label><select id="t-esquema"><option value="">Seleccionar diagnóstico primero</option></select></div>
       <div class="form-group hidden" id="t-inmu-wrap"><label>Agente de inmunoterapia</label><select id="t-inmunoterapia"><option value="">Seleccionar</option><option>Rituximab</option><option>Daratumumab</option><option>Obinutuzumab</option><option>Elotuzumab</option><option>Pembrolizumab</option><option>Nivolumab</option><option>Blinatumomab</option><option>Inotuzumab</option><option>Brentuximab</option><option>Polatuzumab</option><option>Otro</option></select></div>
       <div class="form-group hidden" id="t-tdirigida-wrap"><label>Agente de terapia dirigida</label><select id="t-tdirigida"><option value="">Seleccionar</option><option>Imatinib</option><option>Dasatinib</option><option>Nilotinib</option><option>Bosutinib</option><option>Ponatinib</option><option>Asciminib</option><option>Ibrutinib</option><option>Zanubrutinib</option><option>Acalabrutinib</option><option>Venetoclax</option><option>Idelalisib</option><option>Gilteritinib</option><option>Midostaurina</option><option>Ivosidenib</option><option>Enasidenib</option><option>Lenalidomida</option><option>Pomalidomida</option><option>Talidomida</option><option>Bortezomib</option><option>Carfilzomib</option><option>Eltrombopag</option><option>Luspatercept</option><option>Otro</option></select></div>
-      <div class="form-group hidden" id="t-benigno-wrap"><label>Tx benigno</label><select id="t-benigno"><option value="">Seleccionar</option><option>Hierro</option><option>B12</option><option>B9</option><option>Corticoide</option><option>EPO</option><option>Warfarina</option><option>ACOD</option><option>Antiagregación Plaquetaria</option><option>Ciclosporina</option><option>ATG equina</option><option>ATG de conejo</option><option>Otro</option></select></div>
-      <div class="form-group hidden" id="t-otro-wrap"><label>Especificar</label><input type="text" id="t-otro-benigno"></div>
+      <div class="form-group hidden" id="t-benigno-wrap"><label>Tratamiento benigno</label><select id="t-benigno"><option value="">Seleccionar</option><option>Hierro</option><option>B12</option><option>B9</option><option>Corticoide</option><option>EPO</option><option>Warfarina</option><option>ACOD</option><option>Antiagregación Plaquetaria</option><option>Ciclosporina</option><option>ATG equina</option><option>ATG de conejo</option><option>Otro</option></select></div>
       <div class="form-group hidden" id="t-ciclo-wrap"><label>Número de ciclo</label><input type="number" id="t-ciclo" min="1" placeholder="1"></div>
       <div class="form-group"><label>Fecha de inicio</label><input type="date" id="t-inicio"></div>
       <div class="form-group"><label>Fecha de fin</label><input type="date" id="t-fin"></div>
@@ -401,7 +399,7 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="l-paciente" onchange="loadDxPaciente('l')"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="l-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="l-fecha"></div>
-      <div class="form-group"><label>Tipo de examen</label><select id="l-tipo"><option value="">Seleccionar</option><option>Hemograma completo</option><option>Frotis de sangre periférica</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Inmunofenotipo / CMF</option><option>Citogenética</option><option>Biología molecular</option><option>Coagulación</option><option>Bioquímica</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de examen</label><select id="l-tipo"><option value="">Seleccionar</option><option>Hemograma completo</option><option>Frotis de sangre periférica</option><option>Inmunofenotipo / CMF</option><option>Coagulación</option><option>Bioquímica</option><option>Otro</option></select></div>
       <div class="form-group"><label>Laboratorio origen</label><input type="text" id="l-origen" placeholder="Ej: Lab. Loayza"></div>
       <div class="form-group"><label>Médico solicitante</label><select id="l-medico"><option value="">Seleccionar</option></select></div>
     </div>
@@ -757,7 +755,7 @@ function openModal(id){
   if(id==='modalLaboratorio'||id==='modalProcedimiento'||id==='modalTrasplante'||id==='modalBiomol')loadMedicosEnModal(id);
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
-    ['t-ciclo','t-otro-benigno'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
+    ['t-ciclo'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     ['t-inicio','t-fin'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     document.getElementById('t-fecha-respuesta').value='';
     document.querySelector('#modalTratamiento .modal-title').textContent='Registrar tratamiento';
@@ -904,7 +902,7 @@ async function verPaciente(pacId){
             if(item.d.tipo_tratamiento==='QT')titulo=`${esq||'QT'} · Ciclo ${item.d.numero_ciclo||'?'}`;
             else if(item.d.tipo_tratamiento==='Inmunoterapia')titulo=`Inmunoterapia: ${esq||'—'}`;
             else if(item.d.tipo_tratamiento==='Terapia dirigida')titulo=`Terapia dirigida: ${esq||'—'}`;
-            else titulo=item.d.tipo_tratamiento_benigno||item.d.tipo_tratamiento||'Tratamiento';
+            else titulo=item.d.tipo_tratamiento||'Tratamiento';
             detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.emr?'EMR: '+item.d.emr:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');
           }
           else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_actual||'';}
@@ -996,12 +994,12 @@ function toggleTratFields(){
   document.getElementById('t-inmu-wrap').classList.toggle('hidden',!esInmu);
   document.getElementById('t-tdirigida-wrap').classList.toggle('hidden',!esTD);
   document.getElementById('t-benigno-wrap').classList.toggle('hidden',!esBenigno);
-  document.getElementById('t-otro-wrap').classList.toggle('hidden',!esBenigno);
+
   document.getElementById('t-ciclo-wrap').classList.toggle('hidden',!esQT);
   if(!esQT){document.getElementById('t-esquema').value='';document.getElementById('t-ciclo').value='';}
   if(!esInmu)document.getElementById('t-inmunoterapia').value='';
   if(!esTD)document.getElementById('t-tdirigida').value='';
-  if(!esBenigno){document.getElementById('t-benigno').value='';document.getElementById('t-otro-benigno').value='';}
+  if(!esBenigno)document.getElementById('t-benigno').value='';
   // Actualizar esquemas según tipo
   const dxSel=document.getElementById('t-diagnostico');
   const dxOpt=dxSel?.options[dxSel?.selectedIndex];
@@ -1061,12 +1059,12 @@ async function guardarDiagnostico(){
 async function guardarAtencion(){
   const pacId=v('a-paciente'),tipo=v('a-tipo'),fecha=v('a-fecha');
   if(!pacId||!tipo||!fecha)return showAlert('alert-atencion','error','Paciente, tipo y fecha son obligatorios.');
-  try{await api('POST','atencion',{paciente_id:pacId,diagnostico_id:v('a-diagnostico'),fecha,tipo_atencion:tipo,medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta'),ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),talla_cm:vn('a-talla'),notas:document.getElementById('a-notas').value.trim()||null});showAlert('alert-atencion','success','✓ Atención registrada.');setTimeout(()=>{closeModal('modalAtencion');loadDashboard();if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-atencion','error','Error: '+e.message);}
+  try{await api('POST','atencion',{paciente_id:pacId,diagnostico_id:v('a-diagnostico'),fecha,tipo_atencion:tipo,medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta'),ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),notas:document.getElementById('a-notas').value.trim()||null});showAlert('alert-atencion','success','✓ Atención registrada.');setTimeout(()=>{closeModal('modalAtencion');loadDashboard();if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-atencion','error','Error: '+e.message);}
 }
 async function guardarTratamiento(){
   const pacId=v('t-paciente'),tipo=v('t-tipo');if(!pacId||!tipo)return showAlert('alert-tratamiento','error','Paciente y tipo son obligatorios.');
-  const esquema=tipo==='Inmunoterapia'?v('t-inmunoterapia'):tipo==='Terapia dirigida'?v('t-tdirigida'):v('t-esquema');
-  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
+  const esquema=tipo==='Inmunoterapia'?v('t-inmunoterapia'):tipo==='Terapia dirigida'?v('t-tdirigida'):tipo==='Benigno'?v('t-benigno'):v('t-esquema');
+  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
 }
 async function guardarEvento(){
   const pacId=v('e-paciente'),tipo=v('e-tipo'),fecha=v('e-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-evento','error','Paciente, tipo y fecha son obligatorios.');
@@ -1199,7 +1197,7 @@ async function editarRegistro(tipo, id){
         svt('a-notas',r.notas);
         // Cambiar modo a edición
         document.querySelector('#modalAtencion .modal-title').textContent='Editar atención';
-        document.querySelector('#modalAtencion .btn-primary').onclick=()=>actualizarRegistro('atencion',id,{fecha:v('a-fecha'),tipo_atencion:v('a-tipo'),medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta'),ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),talla_cm:vn('a-talla'),notas:document.getElementById('a-notas').value.trim()||null},'modalAtencion','alert-atencion');
+        document.querySelector('#modalAtencion .btn-primary').onclick=()=>actualizarRegistro('atencion',id,{fecha:v('a-fecha'),tipo_atencion:v('a-tipo'),medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:v('a-conducta'),ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),notas:document.getElementById('a-notas').value.trim()||null},'modalAtencion','alert-atencion');
       },200);
     }
     else if(tipo==='diagnostico'){
@@ -1236,7 +1234,7 @@ async function editarRegistro(tipo, id){
         if(r.tipo_tratamiento==='Inmunoterapia')sv('t-inmunoterapia',r.esquema_qt);
         else if(r.tipo_tratamiento==='Terapia dirigida')sv('t-tdirigida',r.esquema_qt);
         else sv('t-esquema',r.esquema_qt);
-        sv('t-benigno',r.tipo_tratamiento_benigno);svt('t-otro-benigno',r.otro_benigno);
+        if(r.tipo_tratamiento==='Benigno')sv('t-benigno',r.esquema_qt);
         svi('t-ciclo',r.numero_ciclo);sv('t-inicio',r.fecha_inicio);
         // Cargar opciones de respuesta según diagnóstico
         if(r.diagnostico_id){
@@ -1249,7 +1247,7 @@ async function editarRegistro(tipo, id){
         document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
         document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
           const tipo2=v('t-tipo');const esq=tipo2==='Inmunoterapia'?v('t-inmunoterapia'):tipo2==='Terapia dirigida'?v('t-tdirigida'):v('t-esquema');
-          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,tipo_tratamiento_benigno:v('t-benigno'),otro_benigno:document.getElementById('t-otro-benigno').value.trim()||null,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
+          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
         };
       },200);
     }
