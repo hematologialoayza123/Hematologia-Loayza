@@ -659,7 +659,8 @@ function openModal(id){
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     ['t-ciclo','t-otro-benigno'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
-    ['t-inicio','t-fin','t-fecha-respuesta'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value=new Date().toISOString().split('T')[0];});
+    ['t-inicio','t-fin'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
+    document.getElementById('t-fecha-respuesta').value='';
     document.querySelector('#modalTratamiento .modal-title').textContent='Registrar tratamiento';
     document.querySelector('#modalTratamiento .btn-primary').onclick=guardarTratamiento;
     toggleTratFields();
