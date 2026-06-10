@@ -474,24 +474,48 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="pr-paciente" onchange="loadDxPaciente('pr')"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="pr-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="pr-fecha"></div>
-      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo" onchange="toggleTransfusionFields()"><option value="">Seleccionar</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Administración de QT intratecal</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Plasmaféresis</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de procedimiento <span class="req">*</span></label><select id="pr-tipo" onchange="toggleProcFields()"><option value="">Seleccionar</option><option>Aspirado de médula ósea</option><option>Biopsia de médula ósea</option><option>Administración de QT intratecal</option><option>Punción lumbar</option><option>Transfusión de glóbulos rojos</option><option>Transfusión de plaquetas</option><option>Transfusión de plasma</option><option>Plasmaféresis</option><option>Otro</option></select></div>
       <div class="form-group"><label>Operador</label><select id="pr-medico"><option value="">Seleccionar</option></select></div>
-      <div class="form-group"><label>Descripción / Técnica</label><input type="text" id="pr-descripcion" placeholder="Descripción breve"></div>
+      <div class="form-group span2"><label>Descripción / Técnica</label><input type="text" id="pr-descripcion" placeholder="Descripción breve"></div>
       <div class="form-group span2"><label>Hallazgos</label><textarea id="pr-hallazgos" placeholder="Hallazgos del procedimiento..."></textarea></div>
       <div class="form-group span2"><label>Resultado anatomopatológico</label><textarea id="pr-resultado" placeholder="Resultado de biopsia si aplica..."></textarea></div>
       <div class="form-group span2"><label>Complicaciones</label><input type="text" id="pr-complicaciones" placeholder="Ninguna / especificar"></div>
-      <div class="form-group hidden" id="pr-transfusion-wrap">
-        <label>N° unidades</label><input type="number" id="pr-unidades" min="1" placeholder="Ej: 2">
+    </div>
+
+    <!-- CAMPOS AMO -->
+    <div id="pr-amo-section" class="hidden">
+      <div class="section-divider">Aspirado de médula ósea — hallazgos</div>
+      <div class="form-grid cols4">
+        <div class="form-group"><label>Celularidad</label><select id="pr-amo-celularidad"><option value="">—</option><option>Normocelular</option><option>Hipercelular</option><option>Hipocelular</option><option>Acelular</option></select></div>
+        <div class="form-group"><label>Blastos (%)</label><input type="number" id="pr-amo-blastos" step="0.1" min="0" max="100" placeholder="—"></div>
+        <div class="form-group"><label>Células plasmáticas (%)</label><input type="number" id="pr-amo-plasmaticas" step="0.1" min="0" max="100" placeholder="—"></div>
+        <div class="form-group"><label>Hierro (cruces)</label><select id="pr-amo-hierro"><option value="">—</option><option>0</option><option>1+</option><option>2+</option><option>3+</option><option>No evaluado</option></select></div>
       </div>
-      <div class="form-group hidden" id="pr-hb-wrap">
-        <label>Hb pre (g/dL)</label><input type="number" id="pr-hb-pre" step="0.1" placeholder="—">
+      <div class="section-divider">Displasia</div>
+      <div class="form-grid">
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-disp-e"> Displasia eritroide</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-disp-m"> Displasia mieloide</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-disp-meg"> Displasia megacariocítica</label></div>
       </div>
-      <div class="form-group hidden" id="pr-hb-post-wrap">
-        <label>Hb post (g/dL)</label><input type="number" id="pr-hb-post" step="0.1" placeholder="—">
+      <div class="section-divider">Hallazgos especiales</div>
+      <div class="form-grid">
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-infiltrada"> Infiltrada</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-mieloptisis"> Mieloptisis</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-hemofagocitosis"> Hemofagocitosis</label></div>
       </div>
-      <div class="form-group hidden" id="pr-reaccion-wrap" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px">
-        <label class="checkbox-item"><input type="checkbox" id="pr-reaccion"> Reacción transfusional</label>
+    </div>
+
+    <!-- CAMPOS TRANSFUSIÓN -->
+    <div id="pr-transfusion-section" class="hidden">
+      <div class="section-divider">Datos de transfusión</div>
+      <div class="form-grid cols4">
+        <div class="form-group"><label>N° unidades</label><input type="number" id="pr-unidades" min="1" placeholder="Ej: 2"></div>
+        <div class="form-group"><label>Hb pre (g/dL)</label><input type="number" id="pr-hb-pre" step="0.1" placeholder="—"></div>
+        <div class="form-group"><label>Hb post (g/dL)</label><input type="number" id="pr-hb-post" step="0.1" placeholder="—"></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="pr-reaccion"> Reacción transfusional</label></div>
       </div>
+    </div>
+    <div class="form-grid">
     </div>
   </div>
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalProcedimiento')">Cancelar</button><button class="btn btn-primary" onclick="guardarProcedimiento()">Guardar procedimiento</button></div>
@@ -984,7 +1008,15 @@ async function verPaciente(pacId){
           else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
           else if(item.tipo==='trasplante'){titulo=`Trasplante ${item.d.tipo||'—'}`;detalle=[item.d.fuente_celulas,item.d.regimen_acondicionamiento,item.d.injerto?'Injerto logrado':'Sin injerto',item.d.estado_trasplante].filter(Boolean).join(' · ');}
           else if(item.tipo==='biomol'){titulo=`${item.d.gen||'Molecular'}: ${item.d.resultado||'—'}`;detalle=[item.d.tecnica,item.d.valor_cuantitativo?item.d.valor_cuantitativo+(item.d.unidad?' '+item.d.unidad:''):''].filter(Boolean).join(' · ');}
-          else{titulo=item.d.tipo||'Procedimiento';detalle=[item.d.descripcion,item.d.numero_unidades?item.d.numero_unidades+' uds':'',item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');}
+          else{titulo=item.d.tipo||'Procedimiento';
+            const amoDetalles=[];
+            if(item.d.amo_celularidad)amoDetalles.push(item.d.amo_celularidad);
+            if(item.d.amo_blastos!=null)amoDetalles.push(`Blastos ${item.d.amo_blastos}%`);
+            if(item.d.amo_plasmaticas!=null)amoDetalles.push(`PC ${item.d.amo_plasmaticas}%`);
+            if(item.d.amo_infiltrada)amoDetalles.push('Infiltrada');
+            if(item.d.amo_hemofagocitosis)amoDetalles.push('Hemofagocitosis');
+            detalle=[item.d.descripcion,amoDetalles.join(' · ')||null,item.d.numero_unidades?item.d.numero_unidades+' uds':'',item.d.complicaciones?'Compl: '+item.d.complicaciones:''].filter(Boolean).join(' · ');
+          }
           const tableMap={atencion:'atencion',evento:'evento_clinico',tratamiento:'tratamiento',diagnostico:'diagnostico',laboratorio:'laboratorio',procedimiento:'procedimiento',trasplante:'trasplante',biomol:'biologia_molecular'};
           const tbl=tableMap[item.tipo];
           return`<div class="timeline-item"><div class="timeline-dot ${dots[item.tipo]}">${icons[item.tipo]}</div><div class="timeline-content"><div class="timeline-meta" style="display:flex;justify-content:space-between;align-items:center"><span>${ff(item.fecha)}${item.med?' · '+item.med:''}</span><span style="display:flex;gap:4px"><button onclick="editarRegistro('${item.tipo}','${item.d.id}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--text2)" title="Editar">✏️</button><button onclick="eliminarRegistro('${tbl}','${item.d.id}','${currentPacId}')" style="background:none;border:1px solid #f5c6c2;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--accent)" title="Eliminar">🗑️</button></span></div><div class="timeline-text">${titulo}</div>${detalle?`<div class="timeline-detail">${detalle}</div>`:''}</div></div>`;
@@ -1229,18 +1261,19 @@ async function guardarTrasplante(){
   }catch(e){showAlert('alert-trasplante','error','Error: '+e.message);}
 }
 
-function toggleTransfusionFields(){
+function toggleProcFields(){
   const tipo=document.getElementById('pr-tipo')?.value||'';
+  const esAMO=tipo==='Aspirado de médula ósea';
   const esTrans=tipo.includes('Transfusión');
-  ['pr-transfusion-wrap','pr-hb-wrap','pr-hb-post-wrap','pr-reaccion-wrap'].forEach(id=>{
-    document.getElementById(id)?.classList.toggle('hidden',!esTrans);
-  });
+  document.getElementById('pr-amo-section')?.classList.toggle('hidden',!esAMO);
+  document.getElementById('pr-transfusion-section')?.classList.toggle('hidden',!esTrans);
 }
+function toggleTransfusionFields(){toggleProcFields();}
 
 async function guardarProcedimiento(){
   const pacId=v('pr-paciente'),tipo=v('pr-tipo'),fecha=v('pr-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-procedimiento','error','Paciente, tipo y fecha son obligatorios.');
   try{
-    const tipo=v('pr-tipo');
+    const esAMO=tipo==='Aspirado de médula ósea';
     const esTrans=tipo?.includes('Transfusión');
     await api('POST','procedimiento',{
       paciente_id:pacId,diagnostico_id:v('pr-diagnostico'),medico_id:v('pr-medico'),
@@ -1252,7 +1285,17 @@ async function guardarProcedimiento(){
       numero_unidades:esTrans?vni('pr-unidades'):null,
       hb_pre:esTrans?vn('pr-hb-pre'):null,
       hb_post:esTrans?vn('pr-hb-post'):null,
-      reaccion_transfusional:esTrans?document.getElementById('pr-reaccion').checked:false
+      reaccion_transfusional:esTrans?document.getElementById('pr-reaccion').checked:false,
+      amo_celularidad:esAMO?v('pr-amo-celularidad'):null,
+      amo_blastos:esAMO?vn('pr-amo-blastos'):null,
+      amo_plasmaticas:esAMO?vn('pr-amo-plasmaticas'):null,
+      amo_displasia_eritroide:esAMO?document.getElementById('pr-amo-disp-e').checked:false,
+      amo_displasia_mieloide:esAMO?document.getElementById('pr-amo-disp-m').checked:false,
+      amo_displasia_megacariocitica:esAMO?document.getElementById('pr-amo-disp-meg').checked:false,
+      amo_hierro:esAMO?v('pr-amo-hierro'):null,
+      amo_infiltrada:esAMO?document.getElementById('pr-amo-infiltrada').checked:false,
+      amo_mieloptisis:esAMO?document.getElementById('pr-amo-mieloptisis').checked:false,
+      amo_hemofagocitosis:esAMO?document.getElementById('pr-amo-hemofagocitosis').checked:false
     });
     showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');
     setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);
