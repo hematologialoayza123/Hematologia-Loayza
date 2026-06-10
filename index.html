@@ -1392,8 +1392,9 @@ async function editarRegistro(tipo, id){
         toggleTratFields();
         if(r.tipo_tratamiento==='Inmunoterapia')sv('t-inmunoterapia',r.esquema_qt);
         else if(r.tipo_tratamiento==='Terapia dirigida')sv('t-tdirigida',r.esquema_qt);
+        else if(r.tipo_tratamiento==='Benigno')sv('t-benigno',r.esquema_qt);
         else sv('t-esquema',r.esquema_qt);
-        if(r.tipo_tratamiento==='Benigno')sv('t-benigno',r.esquema_qt);
+        svt('t-dosis',r.dosis);if(r.reduccion_dosis)document.getElementById('t-reduccion').checked=true;svt('t-dosis-reducida',r.dosis_reducida);
         svi('t-ciclo',r.numero_ciclo);sv('t-inicio',r.fecha_inicio);
         // Cargar opciones de respuesta según diagnóstico
         if(r.diagnostico_id){
@@ -1405,8 +1406,9 @@ async function editarRegistro(tipo, id){
         sv('t-fin',r.fecha_fin);sv('t-respuesta',r.respuesta);sv('t-emr',r.emr);sv('t-fecha-respuesta',r.fecha_respuesta);
         document.querySelector('#modalTratamiento .modal-title').textContent='Editar tratamiento';
         document.querySelector('#modalTratamiento .btn-primary').onclick=()=>{
-          const tipo2=v('t-tipo');const esq=tipo2==='Inmunoterapia'?v('t-inmunoterapia'):tipo2==='Terapia dirigida'?v('t-tdirigida'):v('t-esquema');
-          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
+          const tipo2=v('t-tipo');
+          const esq=tipo2==='Inmunoterapia'?v('t-inmunoterapia'):tipo2==='Terapia dirigida'?v('t-tdirigida'):tipo2==='Benigno'?v('t-benigno'):v('t-esquema');
+          actualizarRegistro('tratamiento',id,{tipo_tratamiento:tipo2,esquema_qt:esq,dosis:document.getElementById('t-dosis').value.trim()||null,reduccion_dosis:document.getElementById('t-reduccion')?.checked||false,dosis_reducida:document.getElementById('t-dosis-reducida')?.value.trim()||null,numero_ciclo:vni('t-ciclo'),fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')},'modalTratamiento','alert-tratamiento');
         };
       },200);
     }
