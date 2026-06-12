@@ -1482,8 +1482,20 @@ async function editarRegistro(tipo, id){
       setTimeout(()=>{
         sv('dx-paciente',r.paciente_id);sv('dx-fecha',r.fecha_debut);
         sv('dx-categoria',r.categoria);updateDxEspecifico('dx');
-        setTimeout(()=>{sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
-          setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
+        setTimeout(()=>{
+          sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
+          setTimeout(()=>{
+            sv('dx-especifico',r.diagnostico_especifico);
+            // Actualizar estratificación DESPUÉS de que el específico esté seleccionado
+            setTimeout(()=>{
+              actualizarOpcionesEstrategificacion('dx');
+              sv('dx-riesgo',r.estratificacion_riesgo);
+              // Show SMD lineas if SMD
+              const smdWrap=document.getElementById('dx-smd-lineas-wrap');
+              if(smdWrap)smdWrap.classList.toggle('hidden',r.diagnostico_especifico!=='Síndrome mielodisplásico');
+            },150);
+          },100);
+        },100);
         svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
         sv('dx-tipo-dx',r.tipo_diagnostico);
         sv('dx-smd-lineas',r.smd_lineas);
@@ -1493,7 +1505,6 @@ async function editarRegistro(tipo, id){
         sv('dx-ecog-basal',r.ecog_basal);
         sv('dx-fecha-inicio-trat',r.fecha_inicio_tratamiento);
         if(r.dependencia_transfusional)document.getElementById('dx-dep-transfusional').checked=true;
-        setTimeout(()=>{actualizarOpcionesEstrategificacion('dx');sv('dx-riesgo',r.estratificacion_riesgo);},150);
         svi('dx-charlson-basal',r.charlson_basal);svn('dx-peso-basal',r.peso_basal);
         svn('dx-talla',r.talla_cm);
         if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
