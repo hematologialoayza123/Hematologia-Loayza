@@ -271,6 +271,8 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Diagnóstico específico</label><select id="dx-especifico"><option value="">Seleccionar categoría primero</option></select></div>
       <div class="form-group span2"><label>Otro diagnóstico</label><input type="text" id="dx-otro" placeholder="Especificar si aplica"></div>
       <div class="form-group"><label>Estratificación de riesgo</label><select id="dx-riesgo"><option value="">Seleccionar diagnóstico primero</option></select></div>
+      <div class="form-group"><label>Tipo de diagnóstico</label><select id="dx-tipo-dx"><option value="">—</option><option>Presuntivo</option><option>Definitivo</option></select></div>
+      <div class="form-group hidden" id="dx-smd-lineas-wrap"><label>Líneas afectadas (SMD)</label><select id="dx-smd-lineas"><option value="">—</option><option>1 línea — Anemia</option><option>1 línea — Leucopenia</option><option>1 línea — Trombocitopenia</option><option>2 líneas — Anemia + Leucopenia</option><option>2 líneas — Anemia + Trombocitopenia</option><option>2 líneas — Leucopenia + Trombocitopenia</option><option>3 líneas — Pancitopenia</option></select></div>
       <div class="form-group"><label>Síntomas B <span style="color:var(--text3);font-weight:400">(linfomas)</span></label><select id="dx-sintomas-b"><option value="">—</option><option>A - Sin síntomas B</option><option>B - Con síntomas B</option><option>No aplica</option><option>No evaluado</option></select></div>
     </div>
 
@@ -349,7 +351,7 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Motivo</label><select id="a-motivo"><option value="">Seleccionar</option><option>Evaluación paciente nuevo en consulta externa</option><option>Revisión de resultados</option><option>Seguimiento</option><option>Procedimiento</option><option>Evaluación por complicación</option><option>Programacion de QT</option></select></div>
       <div class="form-group"><label>Referido a</label><input type="text" id="a-referido-a" placeholder="Servicio o institución"></div>
       <div class="form-group"><label>Motivo de referencia</label><input type="text" id="a-motivo-ref" placeholder="Motivo de la referencia"></div>
-      <div class="form-group span2"><label>Conducta <span style="color:var(--text3);font-weight:400">(puede seleccionar varias)</span></label><div class="checkbox-grid" style="grid-template-columns:repeat(2,1fr)"><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Observación"> Observación</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Continuar tratamiento"> Continuar tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Cambio de tratamiento"> Cambio de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Suspensión de tratamiento"> Suspensión de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Programación de tratamiento"> Programación de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Transfusión"> Transfusión</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Ingreso a EMG"> Ingreso a EMG</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Alta Hospitalaria/Control por CE"> Alta Hospitalaria/CE</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Alta del servicio"> Alta del servicio</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Inicio de Tratamiento"> Inicio de Tratamiento</label></div></div>
+      <div class="form-group span2"><label>Conducta <span style="color:var(--text3);font-weight:400">(puede seleccionar varias)</span></label><div class="checkbox-grid" style="grid-template-columns:repeat(2,1fr)"><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Observación"> Observación</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Continuar tratamiento"> Continuar tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Cambio de tratamiento"> Cambio de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Suspensión de tratamiento"> Suspensión de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Programación de tratamiento"> Programación de tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Transfusión"> Transfusión</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Ingreso a EMG"> Ingreso a EMG</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Alta Hospitalaria/Control por CE"> Alta Hospitalaria/CE</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Alta del servicio"> Alta del servicio</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Inicio de Tratamiento"> Inicio de Tratamiento</label><label class="checkbox-item"><input type="checkbox" name="conducta-cb" value="Programación de procedimiento"> Programación de procedimiento</label></div></div>
     </div>
     <div class="section-divider">Evaluación clínica</div>
     <div class="form-grid cols3">
@@ -518,6 +520,12 @@ label span.req{color:var(--accent)}
         <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-disp-m"> Displasia mieloide</label></div>
         <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-disp-meg"> Displasia megacariocítica</label></div>
       </div>
+      <div class="section-divider">Estudios solicitados en AMO</div>
+      <div class="form-grid">
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-cmf"> CMF / Inmunofenotipo</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-panel-mol"> Panel molecular</label></div>
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-cariotipo"> Cariotipo</label></div>
+      </div>
       <div class="section-divider">Hallazgos especiales</div>
       <div class="form-grid">
         <div class="form-group" style="flex-direction:row;align-items:center;gap:8px"><label class="checkbox-item"><input type="checkbox" id="pr-amo-infiltrada"> Infiltrada</label></div>
@@ -638,8 +646,8 @@ label span.req{color:var(--accent)}
 <script>
 const URL='https://uuqpuujjlhkpyisrtvvz.supabase.co';
 const KEY='sb_publishable_Lg_xqYeXe7vS_CEj_CfWpA_QjjDy3hL';
-const ANTECEDENTES=['Alcohol','Autoinmunidad','Cardiopatía','Cirrosis hepática/Hepatopatía crónica','Cirugía previa relevante','DM2','EPOC','ERC','Hepatopatía','Hiperesplenismo','Hipertiroidismo','Hipotiroidismo','HTA','Neoplasia previa','Quimioterapia previa','Radioterapia previa','Tabaquismo','TBC','Trasplante previo','TVP/TEP','VIH'];
-const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica','Electroforesis de Hb','Otro'];
+const ANTECEDENTES=['Alcohol','Artritis reumatoide','Autoinmunidad','Cardiopatía','Cirrosis hepática/Hepatopatía crónica','Cirugía previa relevante','DM2','EPOC','ERC','Hepatopatía','Hiperesplenismo','Hipertiroidismo','Hipotiroidismo','HTA','Lupus eritematoso sistémico','Neoplasia previa','Otra enfermedad inmune','Quimioterapia previa','Radioterapia previa','Tabaquismo','TBC','Trasplante previo','TVP/TEP','VIH'];
+const PRUEBAS=['Frotis / Hemograma','AMO','Biopsia Hueso','Biopsia de ganglio','CMF','Molecular','Citogenetica','Electroforesis de Hb','Bioquímica','Otro'];
 const DX_MAP={
   'Maligno':{
     'Leucemia Aguda':['LMA','LPA','LLA-B','LLA-T'],
@@ -658,6 +666,7 @@ const DX_MAP={
       'Coagulopatia','SAF','Trombofilia Primaria','Anticoagulado',
       'Aplasia medular','Hemoglobinuria paroxística nocturna',
       'PTT','SD Hemofagocítico',
+      'TVP','TEP','Citopenias Inmunes','Poliglobulia secundaria',
       'Enfermedad de Gaucher','Otras Histiocitosis','Otra'
     ]
   }
@@ -721,7 +730,11 @@ const RESPUESTAS={
   'mieloma':['RCe (Respuesta completa estricta)','RC (Respuesta completa)','MBRP (Muy buena respuesta parcial)','RP (Respuesta parcial)','Respuesta mínima','Enfermedad estable','Progresión','Recaída'],
   'linfoma':['RMC (Respuesta metabólica completa) Deauville 1-2','RMP (Respuesta metabólica parcial) Deauville 3-4','Enfermedad estable metabólica','Progresión metabólica','Recaída'],
   'smd_insuf':['Respuesta completa','Respuesta parcial','Mejoría hematológica','Estable','Progresión','Transformación a LMA'],
-  'general':['Remisión completa','Remisión parcial','Respuesta completa','Sin respuesta','Mejoría','Estable','Progresión','Recaída']
+  'general':['Remisión completa','Remisión parcial','Respuesta completa','Sin respuesta','Mejoría','Estable','Progresión','Recaída'],
+  'benigno_anemia':['Corrección de Hb','Respuesta parcial','Sin respuesta','Dependiente de transfusión','Estable'],
+  'benigno_citopenia':['Remisión completa','Remisión parcial','Respuesta completa','Sin respuesta','Recaída','Estable'],
+  'benigno_coagulacion':['Anticoagulación adecuada','Anticoagulación subóptima','Sin respuesta','Recurrencia de evento'],
+  'benigno_general':['Mejoría clínica','Remisión completa','Respuesta parcial','Sin respuesta','Estable','Recaída']
 };
 
 const DX_RESPUESTA_MAP={
@@ -734,19 +747,31 @@ const DX_RESPUESTA_MAP={
   'LNH':'linfoma','LH':'linfoma','Macroglobulinemia de Waldenström':'linfoma',
   'Amiloidosis AL':'general',
   'Histiocitosis':'general',
-  'Leucemia no especificada':'leucemia_aguda'
+  'Leucemia no especificada':'leucemia_aguda',
+  'Anemia ferropénica':'benigno_anemia','Anemia megaloblástica':'benigno_anemia',
+  'Anemia por déficit de B9':'benigno_anemia','Anemia secundaria/enfermedad crónica':'benigno_anemia',
+  'AHAI':'benigno_citopenia','SD EVANS':'benigno_citopenia','PTI':'benigno_citopenia',
+  'Talasemia':'benigno_anemia','Anemia falciforme':'benigno_anemia','Esferocitosis hereditaria':'benigno_anemia',
+  'Aplasia medular':'benigno_anemia','Hemoglobinuria paroxística nocturna':'benigno_anemia',
+  'Hemofilia':'benigno_coagulacion','Enfermedad de Von Willebrand':'benigno_coagulacion',
+  'SAF':'benigno_coagulacion','Trombofilia Primaria':'benigno_coagulacion',
+  'TVP':'benigno_coagulacion','TEP':'benigno_coagulacion','Anticoagulado':'benigno_coagulacion',
+  'PTT':'benigno_citopenia','Citopenias Inmunes':'benigno_citopenia',
+  'Poliglobulia secundaria':'benigno_general',
+  'SD Hemofagocítico':'benigno_general','Enfermedad de Gaucher':'benigno_general',
+  'Otras Histiocitosis':'benigno_general'
 };
 
 const ESQUEMAS_MAP={
-  'LMA':['7+3','5+2','FLAG-IDA','FLAG-DAUNO','HiDAC','Aza-Veneto','Aza Mono','LDAC mono','LDAC +Veneto','Midostaurina + 7+3','Gilteritinib','Ivosidenib','Enasidenib','Otro'],
+  'LMA':['7+3','5+2','FLAG-IDA','FLAG-DAUNO','FLUGA','HiDAC','Aza-Veneto','Aza Mono','LDAC mono','LDAC +Veneto','Midostaurina + 7+3','Gilteritinib','Ivosidenib','Enasidenib','Otro'],
   'LPA':['Pethema LPA','Pethema Old','ATRA + ATO','ATO mono','Otro'],
-  'LLA-B':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Pethema ALL-Ph+','Blinatumomab','Inotuzumab','Otro'],
+  'LLA-B':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Pethema ALL-Ph+','Blinatumomab','Inotuzumab','6-Mercaptopurina mono','Otro'],
   'LLA-T':['HyperCVAD','Mini HyperCVAD','CALGB 10403','BFM','Otro'],
   'LLC':['FCR','BR','Ibrutinib','Acalabrutinib','Venetoclax + Obinutuzumab','Idelalisib + Rituximab','Clorambucil + Obinutuzumab','Otro'],
   'LMC':['Imatinib','Dasatinib','Nilotinib','Bosutinib','Ponatinib','Asciminib','Hidroxiurea','Otro'],
   'Síndrome mielodisplásico':['Azacitidina mono','Lenalidomida','EPO/ESA','Luspatercept','Soporte transfusional','Otro'],
   'Aplasia medular':['Ciclosporina + ATG equina','Ciclosporina + ATG de conejo','Eltrombopag','Ciclosporina mono','Otro'],
-  'Mieloma múltiple':['VTD','VRD','DVTd','DVRd','CyBorD','DRC','BDR','KRD','Dara mono','Pomalidomida + Dex','Otro'],
+  'Mieloma múltiple':['VTD','VRD','DVTd','DVRd','CyBorD','DRC','BDR','KRD','Dara mono','Pomalidomida + Dex','Talidomida mono','Talidomida + Dexametasona','Lenalidomida mono','Lenalidomida + Dexametasona','Dexametasona mono','Otro'],
   'Leucemia de células plasmáticas':['VTD','VRD','DVTd','DVRd','CyBorD','Dara mono','Otro'],
   'Síndrome de POEMS':['Melfalán + Dexametasona','VRD','Otro'],
   'Enfermedad de cadenas pesadas':['Rituximab','Quimioterapia','Otro'],
@@ -767,10 +792,10 @@ const ESQUEMAS_MAP={
   // Mantenimiento — por grupo diagnóstico
   '_mantenimiento_lma':['Azacitidina','LDAC mono','Aza-Veneto','Otro'],
   '_mantenimiento_lpa':['ATRA','Metotrexato + 6-Mercaptopurina','Otro'],
-  '_mantenimiento_lla':['Metotrexato + 6-Mercaptopurina','Imatinib','Dasatinib','Otro'],
+  '_mantenimiento_lla':['Metotrexato + 6-Mercaptopurina','6-Mercaptopurina mono','Imatinib','Dasatinib','Otro'],
   '_mantenimiento_linfoma':['Rituximab','Lenalidomida','Brentuximab','Otro'],
   '_mantenimiento_mieloma':['Lenalidomida','Bortezomib','Talidomida','Daratumumab','Otro'],
-  '_mantenimiento_general':['Hidroxiurea','Interferón','Otro'],
+  '_mantenimiento_general':['Hidroxiurea','Interferón','6-Mercaptopurina mono','Otro'],
   'default':['Otro']
 };
 
@@ -998,7 +1023,7 @@ async function verPaciente(pacId){
 
       ${p.antecedentes?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Antecedentes</span></div><div class="card-body" style="padding:12px 16px"><div style="display:flex;flex-wrap:wrap;gap:6px">${p.antecedentes.split(',').filter(a=>a.trim()).map(a=>`<span class="badge badge-amber">${a.trim()}</span>`).join('')}</div>${p.otro_antecedente?`<div style="margin-top:8px;font-size:13px;color:var(--text2)">Otro: ${p.otro_antecedente}</div>`:''}</div></div>`:''}
 
-      ${dxs.length?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Diagnósticos (${dxs.length})</span><button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div><div class="table-wrap"><table><thead><tr><th>Fecha debut</th><th>Diagnóstico</th><th>Categoría</th><th>Riesgo</th><th>Al primer contacto</th><th>Estado actual</th><th>ECOG b.</th><th>Peso/Talla</th></tr></thead><tbody>${dxs.map(d=>`<tr><td style="font-family:var(--mono);font-size:12px">${ff(d.fecha_debut)}</td><td><strong>${d.diagnostico_especifico||d.otro_diagnostico||'—'}</strong></td><td>${d.categoria?`<span class="badge ${d.categoria==='Maligno'?'badge-red':'badge-blue'}">${d.categoria}</span>`:'—'}</td><td style="font-size:12px">${d.estratificacion_riesgo||'—'}</td><td style="font-size:12px;color:var(--text2)">${d.estado_debut||'—'}</td><td>${d.estado_actual?`<span class="badge badge-purple">${d.estado_actual}</span>`:'—'}</td><td style="font-family:var(--mono)">${d.ecog_basal??'—'}</td><td style="font-size:12px;color:var(--text2)">${d.peso_basal?d.peso_basal+'kg':'—'}${d.talla_cm?' / '+d.talla_cm+'cm':''}</td></tr>`).join('')}</tbody></table></div></div>`:
+      ${dxs.length?`<div class="card" style="margin-bottom:14px"><div class="card-header"><span class="card-title">Diagnósticos (${dxs.length})</span><button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div><div class="table-wrap"><table><thead><tr><th>Fecha debut</th><th>Diagnóstico</th><th>Categoría</th><th>Riesgo</th><th>Al primer contacto</th><th>Estado actual</th><th>ECOG b.</th><th>Peso/Talla</th></tr></thead><tbody>${dxs.map(d=>`<tr><td style="font-family:var(--mono);font-size:12px">${ff(d.fecha_debut)}</td><td><strong>${d.diagnostico_especifico||d.otro_diagnostico||'—'}</strong>${d.tipo_diagnostico?` <span class="badge badge-gray" style="font-size:10px">${d.tipo_diagnostico}</span>`:''}</td><td>${d.categoria?`<span class="badge ${d.categoria==='Maligno'?'badge-red':'badge-blue'}">${d.categoria}</span>`:'—'}</td><td style="font-size:12px">${d.estratificacion_riesgo||'—'}</td><td style="font-size:12px;color:var(--text2)">${d.estado_debut||'—'}</td><td>${d.estado_actual?`<span class="badge badge-purple">${d.estado_actual}</span>`:'—'}</td><td style="font-family:var(--mono)">${d.ecog_basal??'—'}</td><td style="font-size:12px;color:var(--text2)">${d.peso_basal?d.peso_basal+'kg':'—'}${d.talla_cm?' / '+d.talla_cm+'cm':''}</td></tr>`).join('')}</tbody></table></div></div>`:
       `<div class="card" style="margin-bottom:14px"><div class="card-body"><div class="empty" style="padding:16px">Sin diagnósticos. <button class="btn btn-ghost btn-sm" onclick="openModalConPaciente('modalDiagnostico')">+ Agregar</button></div></div></div>`}
 
       <div class="card"><div class="card-header"><span class="card-title">Historia clínica</span><span style="font-size:12px;color:var(--text2)">${tl.length} registros</span></div><div class="card-body">
@@ -1121,7 +1146,15 @@ function updateDxEspecifico(prefix){
   }
   actualizarOpcionesEstrategificacion(prefix);
   // Actualizar cuando cambia el específico también
-  sel.onchange=()=>actualizarOpcionesEstrategificacion(prefix);
+  sel.onchange=()=>{
+    actualizarOpcionesEstrategificacion(prefix);
+    // Show SMD lineas only for SMD
+    const wrap=document.getElementById(prefix+'-smd-lineas-wrap');
+    if(wrap)wrap.classList.toggle('hidden',sel.value!=='Síndrome mielodisplásico');
+  };
+  // Initial check
+  const smdWrap=document.getElementById(prefix+'-smd-lineas-wrap');
+  if(smdWrap)smdWrap.classList.toggle('hidden',document.getElementById(prefix+'-especifico')?.value!=='Síndrome mielodisplásico');
 }
 function toggleOtraPrueba(prefix){
   const checked=document.querySelector(`input[name="prueba-${prefix}"][value="Otro"]`)?.checked;
@@ -1209,6 +1242,8 @@ async function guardarDiagnostico(){
       estratificacion_riesgo:v('dx-riesgo'),
       sintomas_b:v('dx-sintomas-b'),
       primer_contacto:v('dx-primer-contacto'),
+      tipo_diagnostico:v('dx-tipo-dx'),
+      smd_lineas:v('dx-smd-lineas'),
       estado_debut:v('dx-estado-debut'),
       estado_actual:v('dx-estado-actual'),
       prueba_confirmatoria:(()=>{let p=getChecked('prueba-dx');const otro=document.getElementById('dx-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),
@@ -1220,7 +1255,13 @@ async function guardarDiagnostico(){
       dependencia_transfusional:document.getElementById('dx-dep-transfusional')?.checked||false
     });
     showAlert('alert-diagnostico','success','✓ Diagnóstico agregado.');
-    setTimeout(()=>{closeModal('modalDiagnostico');if(currentPacId===pacId)verPaciente(pacId);},1200);
+    setTimeout(()=>{
+      closeModal('modalDiagnostico');
+      // Reset form for next entry
+      ['dx-paciente','dx-categoria','dx-principal','dx-especifico','dx-riesgo','dx-tipo-dx','dx-smd-lineas','dx-estado-debut','dx-estado-actual','dx-ecog-basal','dx-primer-contacto'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>cb.checked=false);
+      if(currentPacId===pacId)verPaciente(pacId);
+    },1200);
   }catch(e){showAlert('alert-diagnostico','error','Error: '+e.message);}
 }
 async function guardarAtencion(){
@@ -1338,7 +1379,10 @@ async function guardarProcedimiento(){
       amo_hierro:esAMO?v('pr-amo-hierro'):null,
       amo_infiltrada:esAMO?document.getElementById('pr-amo-infiltrada').checked:false,
       amo_mieloptisis:esAMO?document.getElementById('pr-amo-mieloptisis').checked:false,
-      amo_hemofagocitosis:esAMO?document.getElementById('pr-amo-hemofagocitosis').checked:false
+      amo_hemofagocitosis:esAMO?document.getElementById('pr-amo-hemofagocitosis').checked:false,
+      amo_cmf:esAMO?document.getElementById('pr-amo-cmf').checked:false,
+      amo_panel_molecular:esAMO?document.getElementById('pr-amo-panel-mol').checked:false,
+      amo_cariotipo:esAMO?document.getElementById('pr-amo-cariotipo').checked:false
     });
     showAlert('alert-procedimiento','success','✓ Procedimiento registrado.');
     setTimeout(()=>{closeModal('modalProcedimiento');if(currentPacId===pacId)verPaciente(pacId);},1200);
@@ -1414,6 +1458,8 @@ async function editarRegistro(tipo, id){
         setTimeout(()=>{sv('dx-principal',r.diagnostico_principal_maligno);updateDxEspecifico('dx');
           setTimeout(()=>{sv('dx-especifico',r.diagnostico_especifico);},100);},100);
         svt('dx-otro',r.otro_diagnostico);sv('dx-riesgo',r.estratificacion_riesgo);
+        sv('dx-tipo-dx',r.tipo_diagnostico);
+        sv('dx-smd-lineas',r.smd_lineas);
         sv('dx-sintomas-b',r.sintomas_b);
         sv('dx-primer-contacto',r.primer_contacto);
         sv('dx-estado-debut',r.estado_debut);sv('dx-estado-actual',r.estado_actual);
@@ -1425,7 +1471,7 @@ async function editarRegistro(tipo, id){
         svn('dx-talla',r.talla_cm);
         if(r.prueba_confirmatoria){const ps=r.prueba_confirmatoria.split(',').map(x=>x.trim());document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>{cb.checked=ps.includes(cb.value);});}
         document.querySelector('#modalDiagnostico .modal-title').textContent='Editar diagnóstico';
-        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),sintomas_b:v('dx-sintomas-b'),primer_contacto:v('dx-primer-contacto'),estado_debut:v('dx-estado-debut'),estado_actual:v('dx-estado-actual'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla'),fecha_inicio_tratamiento:v('dx-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('dx-dep-transfusional')?.checked||false},'modalDiagnostico','alert-diagnostico');
+        document.querySelector('#modalDiagnostico .btn-primary').onclick=()=>actualizarRegistro('diagnostico',id,{fecha_debut:v('dx-fecha'),categoria:v('dx-categoria'),diagnostico_principal_maligno:v('dx-principal'),diagnostico_especifico:v('dx-especifico'),otro_diagnostico:document.getElementById('dx-otro').value.trim()||null,estratificacion_riesgo:v('dx-riesgo'),tipo_diagnostico:v('dx-tipo-dx'),smd_lineas:v('dx-smd-lineas'),sintomas_b:v('dx-sintomas-b'),primer_contacto:v('dx-primer-contacto'),estado_debut:v('dx-estado-debut'),estado_actual:v('dx-estado-actual'),prueba_confirmatoria:getChecked('prueba-dx')||null,ecog_basal:v('dx-ecog-basal'),charlson_basal:vni('dx-charlson-basal'),peso_basal:vn('dx-peso-basal'),talla_cm:vn('dx-talla'),fecha_inicio_tratamiento:v('dx-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('dx-dep-transfusional')?.checked||false},'modalDiagnostico','alert-diagnostico');
       },200);
     }
     else if(tipo==='tratamiento'){
