@@ -787,11 +787,12 @@ const ESQUEMAS_MAP={
   'Trombocitemia esencial':['Hidroxiurea','Anagrelida','Interferón','Ruxolitinib','Otro'],
   'Mielofibrosis primaria':['Ruxolitinib','Fedratinib','Pacritinib','Momelotinib','Hidroxiurea','Otro'],
   'Hemoglobinuria paroxística nocturna':['Eculizumab','Ravulizumab','Otro'],
-  // Citorreducción — esquemas independientes del diagnóstico
+  // Paliativo
+  '_paliativo':['6-Mercaptopurina mono','Hidroxiurea','Citarabina dosis bajas (LDAC)','Metotrexato','Clorambucil','Busulfán','Transfusión de soporte','Otro'],
   '_citorreduccion':['Hidroxiurea','Citarabina dosis bajas (LDAC)','Citarabina dosis altas (HiDAC)','Leucoaféresis','Hidroxiurea + Alopurinol','Otro'],
   // Mantenimiento — por grupo diagnóstico
-  '_mantenimiento_lma':['Azacitidina','LDAC mono','Aza-Veneto','Otro'],
-  '_mantenimiento_lpa':['ATRA','Metotrexato + 6-Mercaptopurina','Otro'],
+  '_mantenimiento_lma':['Azacitidina','LDAC mono','Aza-Veneto','6-Mercaptopurina mono','Otro'],
+  '_mantenimiento_lpa':['ATRA','Metotrexato + 6-Mercaptopurina','6-Mercaptopurina mono','Otro'],
   '_mantenimiento_lla':['Metotrexato + 6-Mercaptopurina','6-Mercaptopurina mono','Imatinib','Dasatinib','Otro'],
   '_mantenimiento_linfoma':['Rituximab','Lenalidomida','Brentuximab','Otro'],
   '_mantenimiento_mieloma':['Lenalidomida','Bortezomib','Talidomida','Daratumumab','Otro'],
@@ -807,6 +808,8 @@ function actualizarEsquemas(dxEspecifico){
   let opciones;
   if(tipo==='Citorreducción'){
     opciones=ESQUEMAS_MAP['_citorreduccion'];
+  } else if(tipo==='Paliativo'){
+    opciones=ESQUEMAS_MAP['_paliativo'];
   } else if(tipo==='Mantenimiento'){
     // Seleccionar mantenimiento según diagnóstico
     if(['LMA'].includes(dxEspecifico))opciones=ESQUEMAS_MAP['_mantenimiento_lma'];
@@ -1161,6 +1164,18 @@ function toggleOtraPrueba(prefix){
   const wrap=document.getElementById(prefix+'-otra-prueba-wrap')||document.getElementById(prefix==='p'?'p-otra-prueba-wrap':'dx-otra-prueba-wrap');
   if(wrap)wrap.classList.toggle('hidden',!checked);
 }
+function resetModal(modalId){
+  const modal=document.getElementById(modalId);
+  if(!modal)return;
+  // Reset all inputs, selects, textareas
+  modal.querySelectorAll('input[type=text],input[type=number],input[type=date],textarea').forEach(el=>{
+    if(!el.id?.includes('paciente')&&!el.id?.includes('diagnostico'))el.value='';
+  });
+  modal.querySelectorAll('select').forEach(el=>{
+    if(!el.id?.includes('paciente')&&!el.id?.includes('diagnostico'))el.value='';
+  });
+  modal.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+}
 function toggleGineSection(prefix){
   const sexo=document.getElementById(prefix+'-sexo')?.value;
   const section=document.getElementById(prefix+'-gine-section');
@@ -1189,7 +1204,7 @@ function toggleTratFields(){
   const esInmu=tipo==='Inmunoterapia';
   const esTD=tipo==='Terapia dirigida';
   const esBenigno=tipo==='Benigno';
-  document.getElementById('t-esquema-wrap').classList.toggle('hidden',esBenigno||tipo==='Paliativo'||esInmu||esTD);
+  document.getElementById('t-esquema-wrap').classList.toggle('hidden',esBenigno||esInmu||esTD);
   document.getElementById('t-inmu-wrap').classList.toggle('hidden',!esInmu);
   document.getElementById('t-tdirigida-wrap').classList.toggle('hidden',!esTD);
   document.getElementById('t-benigno-wrap').classList.toggle('hidden',!esBenigno);
@@ -1267,20 +1282,20 @@ async function guardarDiagnostico(){
 async function guardarAtencion(){
   const pacId=v('a-paciente'),tipo=v('a-tipo'),fecha=v('a-fecha');
   if(!pacId||!tipo||!fecha)return showAlert('alert-atencion','error','Paciente, tipo y fecha son obligatorios.');
-  try{await api('POST','atencion',{paciente_id:pacId,diagnostico_id:v('a-diagnostico'),fecha,tipo_atencion:tipo,medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:getChecked('conducta-cb')||null,primer_contacto:v('a-primer-contacto'),referido_a:document.getElementById('a-referido-a').value.trim()||null,motivo_referencia:document.getElementById('a-motivo-ref').value.trim()||null,ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),notas:document.getElementById('a-notas').value.trim()||null});showAlert('alert-atencion','success','✓ Atención registrada.');setTimeout(()=>{closeModal('modalAtencion');loadDashboard();if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-atencion','error','Error: '+e.message);}
+  try{await api('POST','atencion',{paciente_id:pacId,diagnostico_id:v('a-diagnostico'),fecha,tipo_atencion:tipo,medico_id:v('a-medico'),motivo:v('a-motivo'),conducta:getChecked('conducta-cb')||null,primer_contacto:v('a-primer-contacto'),referido_a:document.getElementById('a-referido-a').value.trim()||null,motivo_referencia:document.getElementById('a-motivo-ref').value.trim()||null,ecog:v('a-ecog'),charlson_score:vni('a-charlson'),peso_kg:vn('a-peso'),notas:document.getElementById('a-notas').value.trim()||null});showAlert('alert-atencion','success','✓ Atención registrada.');setTimeout(()=>{resetModal('modalAtencion');closeModal('modalAtencion');loadDashboard();if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-atencion','error','Error: '+e.message);}
 }
 async function guardarTratamiento(){
   const pacId=v('t-paciente'),tipo=v('t-tipo');if(!pacId||!tipo)return showAlert('alert-tratamiento','error','Paciente y tipo son obligatorios.');
   const esquema=tipo==='Inmunoterapia'?v('t-inmunoterapia'):tipo==='Terapia dirigida'?v('t-tdirigida'):tipo==='Benigno'?v('t-benigno'):v('t-esquema');
-  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,dosis:document.getElementById('t-dosis').value.trim()||null,reduccion_dosis:document.getElementById('t-reduccion')?.checked||false,dosis_reducida:document.getElementById('t-dosis-reducida')?.value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
+  try{await api('POST','tratamiento',{paciente_id:pacId,diagnostico_id:v('t-diagnostico'),tipo_tratamiento:tipo,esquema_qt:esquema,dosis:document.getElementById('t-dosis').value.trim()||null,reduccion_dosis:document.getElementById('t-reduccion')?.checked||false,dosis_reducida:document.getElementById('t-dosis-reducida')?.value.trim()||null,numero_ciclo:v('t-ciclo')?parseInt(v('t-ciclo')):null,fecha_inicio:v('t-inicio'),fecha_fin:v('t-fin'),respuesta:v('t-respuesta'),emr:v('t-emr'),fecha_respuesta:v('t-fecha-respuesta')});showAlert('alert-tratamiento','success','✓ Tratamiento registrado.');setTimeout(()=>{resetModal('modalTratamiento');closeModal('modalTratamiento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-tratamiento','error','Error: '+e.message);}
 }
 async function guardarEvento(){
   const pacId=v('e-paciente'),tipo=v('e-tipo'),fecha=v('e-fecha');if(!pacId||!tipo||!fecha)return showAlert('alert-evento','error','Paciente, tipo y fecha son obligatorios.');
-  try{await api('POST','evento_clinico',{paciente_id:pacId,diagnostico_id:v('e-diagnostico'),tratamiento_id:v('e-tratamiento'),tipo_evento:tipo,fecha_evento:fecha,sistema_comprometido:v('e-sistema'),especificacion_evento:document.getElementById('e-especificacion').value.trim()||null,grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),tipo_recaida:v('e-tipo-recaida'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked});showAlert('alert-evento','success','✓ Evento registrado.');setTimeout(()=>{closeModal('modalEvento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-evento','error','Error: '+e.message);}
+  try{await api('POST','evento_clinico',{paciente_id:pacId,diagnostico_id:v('e-diagnostico'),tratamiento_id:v('e-tratamiento'),tipo_evento:tipo,fecha_evento:fecha,sistema_comprometido:v('e-sistema'),especificacion_evento:document.getElementById('e-especificacion').value.trim()||null,grado:v('e-grado'),estado:v('e-estado'),fecha_resolucion:v('e-resolucion'),tipo_recaida:v('e-tipo-recaida'),requirio_hospitalizacion:document.getElementById('e-hosp').checked,requirio_uci:document.getElementById('e-uci').checked,fecha_ingreso_uci:v('e-uci-fecha'),evento_fatal:document.getElementById('e-fatal').checked});showAlert('alert-evento','success','✓ Evento registrado.');setTimeout(()=>{resetModal('modalEvento');closeModal('modalEvento');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-evento','error','Error: '+e.message);}
 }
 async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
-  try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),momento:v('l-momento'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),vcm:vn('l-vcm'),hcm:vn('l-hcm'),chcm:vn('l-chcm'),rdw:vn('l-rdw'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),tp:vn('l-tp'),tpa:vn('l-tpa'),inr:vn('l-inr'),fibrinogeno:vn('l-fibrinogeno'),dimero_d:vn('l-dimero-d'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),bilirrubina_directa:vn('l-bili-d'),bilirrubina_indirecta:vn('l-bili-i'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
+  try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),momento:v('l-momento'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),vcm:vn('l-vcm'),hcm:vn('l-hcm'),chcm:vn('l-chcm'),rdw:vn('l-rdw'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),tp:vn('l-tp'),tpa:vn('l-tpa'),inr:vn('l-inr'),fibrinogeno:vn('l-fibrinogeno'),dimero_d:vn('l-dimero-d'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),bilirrubina_directa:vn('l-bili-d'),bilirrubina_indirecta:vn('l-bili-i'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{resetModal('modalLaboratorio');closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
 }
 let currentEventoId=null;
 function abrirSeguimientoEvento(eventoId, pacId){
