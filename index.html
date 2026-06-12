@@ -457,6 +457,15 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Celularidad</label><select id="l-celularidad"><option value="">—</option><option>Normocelular</option><option>Hipercelular</option><option>Hipocelular</option></select></div>
     </div>
     </div>
+    <div id="l-frotis-section" class="hidden">
+    <div class="section-divider">Frotis de sangre periférica</div>
+    <div class="form-grid cols4">
+      <div class="form-group"><label>Blastos (%)</label><input type="number" id="l-frotis-blastos" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Plaquetas</label><select id="l-frotis-plaquetas"><option value="">—</option><option>Normal</option><option>Aumentadas</option><option>Disminuidas</option><option>Ausentes</option></select></div>
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="l-frotis-linfo-atip"> Linfocitos atípicos</label></div>
+    </div>
+    <div class="form-group" style="margin-top:8px"><label>Descripción del frotis</label><textarea id="l-frotis-desc" placeholder="Hallazgos morfológicos relevantes..."></textarea></div>
+    </div>
     <div id="l-coagulacion-section" class="hidden">
     <div class="section-divider">Coagulación</div>
     <div class="form-grid cols4">
@@ -1060,7 +1069,7 @@ async function verPaciente(pacId){
             detalle=[item.d.respuesta?'Respuesta: '+item.d.respuesta:null,item.d.emr?'EMR: '+item.d.emr:null,item.d.fecha_respuesta?'Fecha resp: '+ff(item.d.fecha_respuesta):null].filter(Boolean).join(' · ');
           }
           else if(item.tipo==='diagnostico'){titulo=`Nuevo dx: ${item.d.diagnostico_especifico||item.d.otro_diagnostico||'Sin especificar'}`;detalle=item.d.estado_actual||'';}
-          else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);detalle=vals.join(' · ');}
+          else if(item.tipo==='laboratorio'){titulo=`${item.d.tipo_examen||'Laboratorio'}`;const vals=[];if(item.d.hemoglobina)vals.push(`Hb ${item.d.hemoglobina}`);if(item.d.leucocitos)vals.push(`Leu ${item.d.leucocitos}`);if(item.d.plaquetas)vals.push(`Plt ${item.d.plaquetas}`);if(item.d.blastos_sangre)vals.push(`Blastos ${item.d.blastos_sangre}%`);if(item.d.frotis_blastos)vals.push(`Blastos ${item.d.frotis_blastos}%`);if(item.d.frotis_linfocitos_atipicos)vals.push('Linf. atípicos');detalle=vals.join(' · ');}
           else if(item.tipo==='trasplante'){titulo=`Trasplante ${item.d.tipo||'—'}`;detalle=[item.d.fuente_celulas,item.d.regimen_acondicionamiento,item.d.injerto?'Injerto logrado':'Sin injerto',item.d.estado_trasplante].filter(Boolean).join(' · ');}
           else if(item.tipo==='biomol'){titulo=`${item.d.gen||'Molecular'}: ${item.d.resultado||'—'}`;detalle=[item.d.tecnica,item.d.valor_cuantitativo?item.d.valor_cuantitativo+(item.d.unidad?' '+item.d.unidad:''):''].filter(Boolean).join(' · ');}
           else{titulo=item.d.tipo||'Procedimiento';
@@ -1167,14 +1176,15 @@ function toggleOtraPrueba(prefix){
 function resetModal(modalId){
   const modal=document.getElementById(modalId);
   if(!modal)return;
-  // Reset all inputs, selects, textareas
-  modal.querySelectorAll('input[type=text],input[type=number],input[type=date],textarea').forEach(el=>{
-    if(!el.id?.includes('paciente')&&!el.id?.includes('diagnostico'))el.value='';
-  });
-  modal.querySelectorAll('select').forEach(el=>{
-    if(!el.id?.includes('paciente')&&!el.id?.includes('diagnostico'))el.value='';
-  });
+  modal.querySelectorAll('input[type=text],input[type=number],input[type=date],textarea').forEach(el=>el.value='');
+  modal.querySelectorAll('select').forEach(el=>el.value='');
   modal.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+  // Reset date fields to today for atención and laboratorio
+  if(['modalAtencion','modalLaboratorio','modalProcedimiento','modalBiomol'].includes(modalId)){
+    const hoy=new Date().toISOString().split('T')[0];
+    const dateField=modal.querySelector('input[type=date]');
+    if(dateField)dateField.value=hoy;
+  }
 }
 function toggleGineSection(prefix){
   const sexo=document.getElementById(prefix+'-sexo')?.value;
@@ -1190,10 +1200,12 @@ function toggleLabFields(){
   const tipo=document.getElementById('l-tipo')?.value||'';
   const showHemo=tipo===''||tipo==='Hemograma completo'||tipo==='Frotis de sangre periférica';
   const showMedula=tipo===''||tipo==='Hemograma completo';
+  const showFrotis=tipo==='Frotis de sangre periférica';
   const showCoag=tipo==='Coagulación';
   const showBio=tipo===''||tipo==='Bioquímica';
   document.getElementById('l-hemograma-section')?.classList.toggle('hidden',!showHemo&&tipo!=='');
   document.getElementById('l-medula-section')?.classList.toggle('hidden',!showMedula&&tipo!=='');
+  document.getElementById('l-frotis-section')?.classList.toggle('hidden',!showFrotis);
   document.getElementById('l-coagulacion-section')?.classList.toggle('hidden',!showCoag);
   document.getElementById('l-bioquimica-section')?.classList.toggle('hidden',!showBio&&tipo!=='');
 }
@@ -1241,7 +1253,7 @@ async function guardarPaciente(){
     const dxEsp=v('d-especifico'),dxFecha=v('d-fecha');
     if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),sintomas_b:v('d-sintomas-b'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla'),fecha_inicio_tratamiento:v('d-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('d-dep-transfusional')?.checked||false});
     showAlert('alert-paciente','success','✓ Paciente registrado.');
-    setTimeout(()=>{closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
+    setTimeout(()=>{resetModal('modalPaciente');closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
   }catch(e){showAlert('alert-paciente','error','Error: '+e.message);}
 }
 async function guardarDiagnostico(){
@@ -1295,7 +1307,7 @@ async function guardarEvento(){
 }
 async function guardarLaboratorio(){
   const pacId=v('l-paciente'),fecha=v('l-fecha');if(!pacId||!fecha)return showAlert('alert-laboratorio','error','Paciente y fecha son obligatorios.');
-  try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),momento:v('l-momento'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),vcm:vn('l-vcm'),hcm:vn('l-hcm'),chcm:vn('l-chcm'),rdw:vn('l-rdw'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),tp:vn('l-tp'),tpa:vn('l-tpa'),inr:vn('l-inr'),fibrinogeno:vn('l-fibrinogeno'),dimero_d:vn('l-dimero-d'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),bilirrubina_directa:vn('l-bili-d'),bilirrubina_indirecta:vn('l-bili-i'),resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{resetModal('modalLaboratorio');closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
+  try{await api('POST','laboratorio',{paciente_id:pacId,diagnostico_id:v('l-diagnostico'),medico_id:v('l-medico'),fecha,tipo_examen:v('l-tipo'),momento:v('l-momento'),laboratorio_origen:document.getElementById('l-origen').value.trim()||null,hemoglobina:vn('l-hb'),hematocrito:vn('l-hto'),leucocitos:vn('l-leuco'),plaquetas:vn('l-plaq'),neutrofilos:vn('l-neutro'),neutrofilos_pct:vn('l-neutro-pct'),linfocitos:vn('l-linfo'),blastos_sangre:vn('l-blastos-s'),vcm:vn('l-vcm'),hcm:vn('l-hcm'),chcm:vn('l-chcm'),rdw:vn('l-rdw'),blastos_medula:vn('l-blastos-m'),celularidad:v('l-celularidad'),tp:vn('l-tp'),tpa:vn('l-tpa'),inr:vn('l-inr'),fibrinogeno:vn('l-fibrinogeno'),dimero_d:vn('l-dimero-d'),ldh:vn('l-ldh'),beta2_microglobulina:vn('l-b2m'),albumina:vn('l-alb'),creatinina:vn('l-creat'),ferritina:vn('l-ferrit'),vitamina_b12:vn('l-b12'),acido_folico:vn('l-folico'),bilirrubina:vn('l-bili'),bilirrubina_directa:vn('l-bili-d'),bilirrubina_indirecta:vn('l-bili-i'),frotis_blastos:vn('l-frotis-blastos'),frotis_plaquetas:v('l-frotis-plaquetas'),frotis_linfocitos_atipicos:document.getElementById('l-frotis-linfo-atip')?.checked||false,frotis_descripcion:document.getElementById('l-frotis-desc')?.value.trim()||null,resultado_texto:document.getElementById('l-resultado').value.trim()||null});showAlert('alert-laboratorio','success','✓ Laboratorio registrado.');setTimeout(()=>{resetModal('modalLaboratorio');closeModal('modalLaboratorio');if(currentPacId===pacId)verPaciente(pacId);},1200);}catch(e){showAlert('alert-laboratorio','error','Error: '+e.message);}
 }
 let currentEventoId=null;
 function abrirSeguimientoEvento(eventoId, pacId){
