@@ -202,6 +202,7 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Fecha ingreso Hematología</label><input type="date" id="p-fingreso"></div>
       <div class="form-group"><label>Seguro</label><select id="p-seguro"><option value="">Seleccionar</option><option>SIS</option><option>ESSALUD</option><option>PARTICULAR</option></select></div>
       <div class="form-group"><label>Estado</label><select id="p-estado-vital"><option value="Vivo">Vivo</option><option value="Fallecido">Fallecido</option><option value="Referido">Referido</option></select></div>
+      <div class="form-group"><label>Primer contacto</label><select id="p-primer-contacto"><option value="">—</option><option>Consulta externa</option><option>Hospitalización</option><option>Emergencia</option></select></div>
     </div>
     <div class="section-divider">Antecedentes</div>
     <div class="checkbox-grid" id="antecedentes-grid"></div>
@@ -891,6 +892,23 @@ function openModal(id){
   document.getElementById(id).classList.remove('hidden');
   loadPacsEnSelect();
   if(id==='modalLaboratorio'||id==='modalProcedimiento'||id==='modalTrasplante'||id==='modalBiomol')loadMedicosEnModal(id);
+  // Reset title and button for modals that can be used for edit or new
+  const resetMap={
+    modalDiagnostico:['Agregar diagnóstico','guardarDiagnostico'],
+    modalAtencion:['Registrar atención','guardarAtencion'],
+    modalEvento:['Registrar evento clínico','guardarEvento'],
+    modalLaboratorio:['Registrar laboratorio','guardarLaboratorio'],
+    modalProcedimiento:['Registrar procedimiento','guardarProcedimiento'],
+    modalTrasplante:['Registrar trasplante','guardarTrasplante'],
+    modalBiomol:['Registrar biología molecular','guardarBiomol'],
+  };
+  if(resetMap[id]){
+    const [titulo,fn]=resetMap[id];
+    const titleEl=document.querySelector(`#${id} .modal-title`);
+    const btnEl=document.querySelector(`#${id} .btn-primary`);
+    if(titleEl)titleEl.textContent=titulo;
+    if(btnEl)btnEl.onclick=window[fn];
+  }
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
     ['t-ciclo'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
@@ -1251,7 +1269,7 @@ async function guardarPaciente(){
     const sexoP=v('p-sexo');const res=await api('POST','paciente',{hc,nombre,sexo:sexoP,fecha_nacimiento:v('p-fnac'),fecha_ingreso_hematologia:v('p-fingreso'),seguro:v('p-seguro'),estado_vital:v('p-estado-vital')||'Vivo',antecedentes:getChecked('ant')||null,otro_antecedente:document.getElementById('p-otro-ant').value.trim()||null,gesta:sexoP==='F'?vni('p-gesta'):null,para:sexoP==='F'?vni('p-para'):null,abortos:sexoP==='F'?vni('p-abortos'):null,regimen_catamenial:sexoP==='F'?v('p-catamenial'):null,menorragia:sexoP==='F'?(document.getElementById('p-menorragia')?.checked||false):false});
     const pac=Array.isArray(res)?res[0]:res;
     const dxEsp=v('d-especifico'),dxFecha=v('d-fecha');
-    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),tipo_diagnostico:v('d-tipo-dx'),sintomas_b:v('d-sintomas-b'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla'),fecha_inicio_tratamiento:v('d-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('d-dep-transfusional')?.checked||false});
+    if(dxEsp||dxFecha)await api('POST','diagnostico',{paciente_id:pac.id,fecha_debut:dxFecha,categoria:v('d-categoria'),diagnostico_principal_maligno:v('d-principal'),diagnostico_especifico:dxEsp,otro_diagnostico:document.getElementById('d-otro').value.trim()||null,estratificacion_riesgo:v('d-riesgo'),tipo_diagnostico:v('d-tipo-dx'),primer_contacto:v('p-primer-contacto'),sintomas_b:v('d-sintomas-b'),estado_debut:v('d-estado-debut'),estado_actual:v('d-estado-actual'),prueba_confirmatoria:(()=>{let p=getChecked('prueba-p');const otro=document.getElementById('p-otra-prueba')?.value.trim();if(otro&&p.includes('Otro'))p=p.replace('Otro','Otro: '+otro);return p||null;})(),ecog_basal:v('d-ecog-basal'),charlson_basal:vni('d-charlson-basal'),peso_basal:vn('d-peso-basal'),talla_cm:vn('d-talla'),fecha_inicio_tratamiento:v('d-fecha-inicio-trat'),dependencia_transfusional:document.getElementById('d-dep-transfusional')?.checked||false});
     showAlert('alert-paciente','success','✓ Paciente registrado.');
     setTimeout(()=>{resetModal('modalPaciente');closeModal('modalPaciente');loadPacientes();loadDashboard();},1500);
   }catch(e){showAlert('alert-paciente','error','Error: '+e.message);}
@@ -1283,8 +1301,8 @@ async function guardarDiagnostico(){
     });
     showAlert('alert-diagnostico','success','✓ Diagnóstico agregado.');
     setTimeout(()=>{
+      resetModal('modalDiagnostico');
       closeModal('modalDiagnostico');
-      // Reset form for next entry
       ['dx-paciente','dx-categoria','dx-principal','dx-especifico','dx-riesgo','dx-tipo-dx','dx-smd-lineas','dx-estado-debut','dx-estado-actual','dx-ecog-basal','dx-primer-contacto'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
       document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>cb.checked=false);
       if(currentPacId===pacId)verPaciente(pacId);
