@@ -894,6 +894,9 @@ function openModal(id){
     const btnEl=document.querySelector(`#${id} .btn-primary`);
     if(titleEl)titleEl.textContent=titulo;
     if(btnEl)btnEl.onclick=window[fn];
+    // Full reset of the modal
+    resetModal(id);
+    if(id==='modalDiagnostico')resetDiagnosticoModal();
   }
   if(id==='modalTratamiento'){
     ['t-paciente','t-diagnostico','t-tipo','t-esquema','t-inmunoterapia','t-tdirigida','t-benigno','t-respuesta','t-emr'].forEach(fid=>{const el=document.getElementById(fid);if(el)el.value='';});
@@ -1191,12 +1194,37 @@ function resetModal(modalId){
   modal.querySelectorAll('input[type=text],input[type=number],input[type=date],textarea').forEach(el=>el.value='');
   modal.querySelectorAll('select').forEach(el=>el.value='');
   modal.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
-  // Reset date fields to today for atención and laboratorio
-  if(['modalAtencion','modalLaboratorio','modalProcedimiento','modalBiomol'].includes(modalId)){
-    const hoy=new Date().toISOString().split('T')[0];
-    const dateField=modal.querySelector('input[type=date]');
-    if(dateField)dateField.value=hoy;
-  }
+}
+
+function resetDiagnosticoModal(){
+  // Reset all select fields explicitly
+  ['dx-paciente','dx-categoria','dx-principal','dx-especifico','dx-riesgo',
+   'dx-tipo-dx','dx-smd-lineas','dx-sintomas-b','dx-primer-contacto',
+   'dx-estado-debut','dx-estado-actual'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  // Reset text inputs
+  ['dx-fecha','dx-otro'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  // Reset checkboxes
+  document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>cb.checked=false);
+  const otraWrap=document.getElementById('dx-otra-prueba-wrap');
+  if(otraWrap)otraWrap.classList.add('hidden');
+  const otraInput=document.getElementById('dx-otra-prueba');
+  if(otraInput)otraInput.value='';
+  // Reset SMD lineas visibility
+  const smdWrap=document.getElementById('dx-smd-lineas-wrap');
+  if(smdWrap)smdWrap.classList.add('hidden');
+  // Reset principal wrap visibility
+  const principalWrap=document.getElementById('dx-principal-wrap');
+  if(principalWrap)principalWrap.style.display='';
+  // Reset estratificacion to default
+  const riesgoSel=document.getElementById('dx-riesgo');
+  if(riesgoSel)riesgoSel.innerHTML='<option value="">Seleccionar diagnóstico primero</option>';
+  // Reset especifico to default
+  const espSel=document.getElementById('dx-especifico');
+  if(espSel)espSel.innerHTML='<option value="">Seleccionar categoría primero</option>';
 }
 function toggleGineSection(prefix){
   const sexo=document.getElementById(prefix+'-sexo')?.value;
@@ -1291,9 +1319,8 @@ async function guardarDiagnostico(){
     showAlert('alert-diagnostico','success','✓ Diagnóstico agregado.');
     setTimeout(()=>{
       resetModal('modalDiagnostico');
+      resetDiagnosticoModal();
       closeModal('modalDiagnostico');
-      ['dx-paciente','dx-categoria','dx-principal','dx-especifico','dx-riesgo','dx-tipo-dx','dx-smd-lineas','dx-estado-debut','dx-estado-actual','dx-primer-contacto'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-      document.querySelectorAll('input[name="prueba-dx"]').forEach(cb=>cb.checked=false);
       if(currentPacId===pacId)verPaciente(pacId);
     },1200);
   }catch(e){showAlert('alert-diagnostico','error','Error: '+e.message);}
