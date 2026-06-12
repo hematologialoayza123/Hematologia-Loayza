@@ -256,6 +256,17 @@ label span.req{color:var(--accent)}
       </div>
     </div>
   </div>
+    <div class="section-divider">Evaluación basal al primer contacto</div>
+    <div class="form-grid cols4">
+      <div class="form-group"><label>ECOG basal</label><select id="ep-ecog-basal"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      <div class="form-group"><label>Charlson basal</label><input type="number" id="ep-charlson-basal" min="0" max="37" placeholder="0-37"></div>
+      <div class="form-group"><label>Peso basal (kg)</label><input type="number" id="ep-peso-basal" step="0.1" placeholder="Ej: 68.5"></div>
+      <div class="form-group"><label>Talla (cm)</label><input type="number" id="ep-talla" step="0.1" placeholder="Ej: 165.0"></div>
+    </div>
+    <div class="form-grid" style="margin-top:10px">
+      <div class="form-group"><label>Fecha inicio tratamiento</label><input type="date" id="ep-fecha-inicio-trat"></div>
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="ep-dep-transfusional"> Dependencia transfusional al diagnóstico</label></div>
+    </div>
   <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalEditarPaciente')">Cancelar</button><button class="btn btn-primary" onclick="guardarEdicionPaciente()">Guardar cambios</button></div>
 </div></div>
 
