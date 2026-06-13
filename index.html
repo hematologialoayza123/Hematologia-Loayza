@@ -1634,13 +1634,52 @@ async function editarRegistro(tipo, id){
         sv('pr-tipo',r.tipo);sv('pr-medico',r.medico_id);
         svt('pr-descripcion',r.descripcion);svt('pr-hallazgos',r.hallazgos);
         svt('pr-resultado',r.resultado_anatomopat);svt('pr-complicaciones',r.complicaciones);
+        // Transfusion fields
         svi('pr-unidades',r.numero_unidades);svn('pr-hb-pre',r.hb_pre);svn('pr-hb-post',r.hb_post);
         if(r.reaccion_transfusional)document.getElementById('pr-reaccion').checked=true;
-        toggleTransfusionFields();
+        // AMO fields
+        sv('pr-amo-celularidad',r.amo_celularidad);
+        svn('pr-amo-blastos',r.amo_blastos);svn('pr-amo-plasmaticas',r.amo_plasmaticas);
+        sv('pr-amo-hierro',r.amo_hierro);
+        if(r.amo_displasia_eritroide)document.getElementById('pr-amo-disp-e').checked=true;
+        if(r.amo_displasia_mieloide)document.getElementById('pr-amo-disp-m').checked=true;
+        if(r.amo_displasia_megacariocitica)document.getElementById('pr-amo-disp-meg').checked=true;
+        if(r.amo_infiltrada)document.getElementById('pr-amo-infiltrada').checked=true;
+        if(r.amo_mieloptisis)document.getElementById('pr-amo-mieloptisis').checked=true;
+        if(r.amo_hemofagocitosis)document.getElementById('pr-amo-hemofagocitosis').checked=true;
+        if(r.amo_cmf)document.getElementById('pr-amo-cmf').checked=true;
+        if(r.amo_panel_molecular)document.getElementById('pr-amo-panel-mol').checked=true;
+        if(r.amo_cariotipo)document.getElementById('pr-amo-cariotipo').checked=true;
+        toggleProcFields();
         document.querySelector('#modalProcedimiento .modal-title').textContent='Editar procedimiento';
         document.querySelector('#modalProcedimiento .btn-primary').onclick=()=>{
-          const tipo2=v('pr-tipo');const esTrans=tipo2?.includes('Transfusión');
-          actualizarRegistro('procedimiento',id,{fecha:v('pr-fecha'),tipo:tipo2,medico_id:v('pr-medico'),descripcion:document.getElementById('pr-descripcion').value.trim()||null,hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,complicaciones:document.getElementById('pr-complicaciones').value.trim()||null,numero_unidades:esTrans?vni('pr-unidades'):null,hb_pre:esTrans?vn('pr-hb-pre'):null,hb_post:esTrans?vn('pr-hb-post'):null,reaccion_transfusional:esTrans?document.getElementById('pr-reaccion').checked:false},'modalProcedimiento','alert-procedimiento');
+          const tipo2=v('pr-tipo');
+          const esAMO2=tipo2==='Aspirado de médula ósea';
+          const esTrans2=tipo2?.includes('Transfusión');
+          actualizarRegistro('procedimiento',id,{
+            fecha:v('pr-fecha'),tipo:tipo2,medico_id:v('pr-medico'),
+            descripcion:document.getElementById('pr-descripcion').value.trim()||null,
+            hallazgos:document.getElementById('pr-hallazgos').value.trim()||null,
+            resultado_anatomopat:document.getElementById('pr-resultado').value.trim()||null,
+            complicaciones:document.getElementById('pr-complicaciones').value.trim()||null,
+            numero_unidades:esTrans2?vni('pr-unidades'):null,
+            hb_pre:esTrans2?vn('pr-hb-pre'):null,
+            hb_post:esTrans2?vn('pr-hb-post'):null,
+            reaccion_transfusional:esTrans2?document.getElementById('pr-reaccion').checked:false,
+            amo_celularidad:esAMO2?v('pr-amo-celularidad'):null,
+            amo_blastos:esAMO2?vn('pr-amo-blastos'):null,
+            amo_plasmaticas:esAMO2?vn('pr-amo-plasmaticas'):null,
+            amo_hierro:esAMO2?v('pr-amo-hierro'):null,
+            amo_displasia_eritroide:esAMO2?document.getElementById('pr-amo-disp-e').checked:false,
+            amo_displasia_mieloide:esAMO2?document.getElementById('pr-amo-disp-m').checked:false,
+            amo_displasia_megacariocitica:esAMO2?document.getElementById('pr-amo-disp-meg').checked:false,
+            amo_infiltrada:esAMO2?document.getElementById('pr-amo-infiltrada').checked:false,
+            amo_mieloptisis:esAMO2?document.getElementById('pr-amo-mieloptisis').checked:false,
+            amo_hemofagocitosis:esAMO2?document.getElementById('pr-amo-hemofagocitosis').checked:false,
+            amo_cmf:esAMO2?document.getElementById('pr-amo-cmf').checked:false,
+            amo_panel_molecular:esAMO2?document.getElementById('pr-amo-panel-mol').checked:false,
+            amo_cariotipo:esAMO2?document.getElementById('pr-amo-cariotipo').checked:false
+          },'modalProcedimiento','alert-procedimiento');
         };
       },200);
     }
