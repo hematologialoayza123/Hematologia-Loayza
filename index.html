@@ -431,7 +431,7 @@ label span.req{color:var(--accent)}
       <div class="form-group span2"><label>Paciente <span class="req">*</span></label><select id="l-paciente" onchange="loadDxPaciente('l')"><option value="">Seleccionar paciente</option></select></div>
       <div class="form-group span2"><label>Diagnóstico relacionado</label><select id="l-diagnostico"><option value="">Seleccionar</option></select></div>
       <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date" id="l-fecha"></div>
-      <div class="form-group"><label>Tipo de examen</label><select id="l-tipo" onchange="toggleLabFields()"><option value="">Seleccionar</option><option>Hemograma completo</option><option>Frotis de sangre periférica</option><option>Inmunofenotipo / CMF</option><option>Coagulación</option><option>Bioquímica</option><option>Proteinograma / Electroforesis</option><option>Inmunofijación sérica</option><option>Inmunofijación urinaria</option><option>Cadenas ligeras libres</option><option>Inmunoglobulinas séricas</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Tipo de examen</label><select id="l-tipo" onchange="toggleLabFields()"><option value="">Seleccionar</option><option>Hemograma completo</option><option>Frotis de sangre periférica</option><option>Inmunofenotipo / CMF</option><option>Coagulación</option><option>Bioquímica</option><option>Perfil de mieloma</option><option>Otro</option></select></div>
       <div class="form-group"><label>Momento</label><select id="l-momento"><option value="">—</option><option>Pre-tratamiento</option><option>Post-tratamiento</option><option>Durante tratamiento</option><option>Control</option><option>Pre-trasplante</option><option>Post-trasplante</option><option>Otro</option></select></div>
       <div class="form-group"><label>Laboratorio origen</label><input type="text" id="l-origen" placeholder="Ej: Lab. Loayza"></div>
       <div class="form-group"><label>Médico solicitante</label><select id="l-medico"><option value="">Seleccionar</option></select></div>
@@ -492,18 +492,38 @@ label span.req{color:var(--accent)}
       <div class="form-group"><label>Bilirrubina total (mg/dL)</label><input type="number" id="l-bili" step="0.01" placeholder="—"></div>
       <div class="form-group"><label>Bilirrubina directa</label><input type="number" id="l-bili-d" step="0.01" placeholder="—"></div>
       <div class="form-group"><label>Bilirrubina indirecta</label><input type="number" id="l-bili-i" step="0.01" placeholder="—"></div>
+      <div class="form-group"><label>Proteínas totales (g/dL)</label><input type="number" id="l-prot-total" step="0.01" placeholder="—"></div>
+      <div class="form-group"><label>Globulinas (g/dL)</label><input type="number" id="l-globulinas" step="0.01" placeholder="—"></div>
+      <div class="form-group"><label>Ratio A/G</label><input type="number" id="l-ratio-ag" step="0.01" placeholder="—"></div>
     </div>
     </div>
     <div id="l-proteinas-section" class="hidden">
-    <div class="section-divider">Proteínas / Inmunofijación / Cadenas ligeras</div>
+    <div class="section-divider">Perfil de mieloma</div>
     <div class="form-grid cols4">
-      <div class="form-group"><label>Proteína total (g/dL)</label><input type="number" id="l-prot-total" step="0.01" placeholder="—"></div>
-      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:20px"><label class="checkbox-item"><input type="checkbox" id="l-pico-m"> Pico M presente</label></div>
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;padding-top:4px"><label class="checkbox-item"><input type="checkbox" id="l-pico-m"> Pico M presente</label></div>
       <div class="form-group"><label>Valor pico M (g/dL)</label><input type="number" id="l-pico-m-valor" step="0.01" placeholder="—"></div>
       <div class="form-group"><label>Tipo pico M</label><select id="l-tipo-pico-m"><option value="">—</option><option>IgG</option><option>IgA</option><option>IgM</option><option>IgD</option><option>IgE</option><option>Cadenas ligeras libres</option><option>No especificado</option></select></div>
+    </div>
+    <div class="section-divider">Proteinograma / Electroforesis</div>
+    <div class="form-grid cols4">
+      <div class="form-group"><label>Proteínas totales (g/dL)</label><input type="number" id="l-prot-total-mieloma" step="0.01" placeholder="—"></div>
+      <div class="form-group"><label>Albúmina EF (%)</label><input type="number" id="l-alb-ef" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Alfa-1 globulina (%)</label><input type="number" id="l-alfa1" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Alfa-2 globulina (%)</label><input type="number" id="l-alfa2" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Beta globulina (%)</label><input type="number" id="l-beta-glob" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Gamma globulina (%)</label><input type="number" id="l-gamma" step="0.1" placeholder="—"></div>
+    </div>
+    <div class="section-divider">Cadenas ligeras libres séricas</div>
+    <div class="form-grid cols4">
       <div class="form-group"><label>Cadenas κ kappa (mg/L)</label><input type="number" id="l-kappa" step="0.01" placeholder="—"></div>
       <div class="form-group"><label>Cadenas λ lambda (mg/L)</label><input type="number" id="l-lambda" step="0.01" placeholder="—"></div>
       <div class="form-group"><label>Ratio κ/λ</label><input type="number" id="l-ratio-kl" step="0.001" placeholder="—"></div>
+    </div>
+    <div class="section-divider">Cadenas ligeras libres urinarias (BJ)</div>
+    <div class="form-grid cols4">
+      <div class="form-group"><label>Proteínas orina 24h (mg)</label><input type="number" id="l-prot-orina" step="0.1" placeholder="—"></div>
+      <div class="form-group"><label>Pico M urinario (mg/dL)</label><input type="number" id="l-pico-m-orina" step="0.01" placeholder="—"></div>
+      <div class="form-group"><label>Tipo cadena BJ</label><select id="l-tipo-bj"><option value="">—</option><option>Kappa</option><option>Lambda</option><option>No detectado</option></select></div>
     </div>
     <div class="section-divider">Inmunoglobulinas séricas</div>
     <div class="form-grid cols4">
@@ -1350,7 +1370,7 @@ function toggleLabFields(){
   const showFrotis=tipo==='Frotis de sangre periférica';
   const showCoag=tipo==='Coagulación';
   const showBio=tipo===''||tipo==='Bioquímica';
-  const showProteinas=['Proteinograma / Electroforesis','Inmunofijación sérica','Inmunofijación urinaria','Cadenas ligeras libres','Inmunoglobulinas séricas'].includes(tipo);
+  const showProteinas=['Perfil de mieloma'].includes(tipo);
   document.getElementById('l-hemograma-section')?.classList.toggle('hidden',!showHemo&&tipo!=='');
   document.getElementById('l-medula-section')?.classList.toggle('hidden',!showMedula&&tipo!=='');
   document.getElementById('l-frotis-section')?.classList.toggle('hidden',!showFrotis);
