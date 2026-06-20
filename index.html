@@ -1183,7 +1183,7 @@ async function verPaciente(pacId){
             }
             detalle=[tratNombre?`Trat: ${tratNombre}`:null,item.d.tipo_recaida||null,estadoActual?`<strong>${estadoActual}</strong>`:null,item.d.evento_fatal?'⚠️ FATAL':'',item.d.requirio_uci?'UCI':'',item.d.requirio_hospitalizacion?'Hospitalizado':''].filter(Boolean).join(' · ');
             if(segs.length>0){
-              detalle+=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Evolución</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${segs.map(s=>`<span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px">${ff(s.fecha)} <strong>${s.estado}</strong>${s.nota?' — '+s.nota:''}</span>`).join('')}</div></div>`;
+              detalle+=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Evolución</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${segs.map(s=>`<span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px">${ff(s.fecha)} <strong>${s.estado}</strong>${s.grado?' · G<strong>${s.grado}</strong>':''}${s.grado==='5'?' ⚠️ FATAL':''}${s.nota?' — '+s.nota:''}</span>`).join('')}</div></div>`;
             }
             detalle+=`<div style="margin-top:6px"><button onclick="abrirSeguimientoEvento('${item.d.id}','${currentPacId}')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;color:var(--text2)">+ Actualizar estado</button></div>`;
           }
@@ -1512,10 +1512,15 @@ function abrirSeguimientoEvento(eventoId, pacId){
 
 async function guardarSeguimientoEvento(){
   if(!currentEventoId)return;
-  const fecha=v('seg-fecha'),estado=v('seg-estado');
+  const fecha=v('seg-fecha'),estado=v('seg-estado'),grado=v('seg-grado');
   if(!fecha||!estado)return showAlert('alert-seguimiento','error','Fecha y estado son obligatorios.');
   try{
-    await api('POST','evento_seguimiento',{evento_id:currentEventoId,paciente_id:currentPacId,fecha,estado,grado:v('seg-grado'),nota:document.getElementById('seg-nota').value.trim()||null,medico_id:v('seg-medico')});
+    await api('POST','evento_seguimiento',{evento_id:currentEventoId,paciente_id:currentPacId,fecha,estado,grado,nota:document.getElementById('seg-nota').value.trim()||null,medico_id:v('seg-medico')});
+    // Si grado 5, marcar evento como fatal y paciente como fallecido
+    if(grado==='5'){
+      await api('PATCH','evento_clinico',{evento_fatal:true},`?id=eq.${currentEventoId}`);
+      await api('PATCH','paciente',{estado_vital:'Fallecido',fecha_fallecimiento:fecha},`?id=eq.${currentPacId}`);
+    }
     showAlert('alert-seguimiento','success','✓ Estado actualizado.');
     setTimeout(()=>{closeModal('modalSeguimientoEvento');verPaciente(currentPacId);},1200);
   }catch(e){showAlert('alert-seguimiento','error','Error: '+e.message);}
